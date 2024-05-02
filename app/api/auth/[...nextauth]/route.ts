@@ -1,5 +1,5 @@
 import NextAuth, {Profile, Session} from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
+import GoogleProvider, {GoogleProfile} from 'next-auth/providers/google'
 
 import {connectToDB} from '@utils/database'
 import User from '@models/user'
@@ -21,7 +21,7 @@ const handler = NextAuth({
         email: session.user.email as string
       }) as unknown as SessionUser
 
-      session.user.id = sessionUser._id.toString()
+      session.user.id = sessionUser._id?.toString()
 
       return session
     },
@@ -39,7 +39,7 @@ const handler = NextAuth({
           await User.create({
             email: profile.email,
             username: profile.name?.replace(' ', '').toLowerCase(),
-            image: profile.image
+            image: profile.image ? profile.image : (profile as GoogleProfile).picture
           })
         }
 

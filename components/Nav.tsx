@@ -33,25 +33,29 @@ function Nav() {
         Home
       </Link>
       <div className='flex gap-4'>
+        {session?.user
+          ? (
             <>
-              <button
-                type='button'
-                onClick={signOut}
-                className='text-gray-900 text-xl transition ease-in-out duration-300 hover:text-orange-500'>
-                Sign Out
-              </button>
+            <button
+              type='button'
+              onClick={() => {signOut()}}
+              className='text-gray-900 text-xl transition ease-in-out duration-300 hover:text-orange-500'>
+              Sign Out
+            </button>
 
-              <Link href='/profile'>
-                <Image
-                 /* src={'/assets/icons/user.svg'}*/
-                  src={session?.user.image}
-                  alt='Profile'
-                  width={37}
-                  height={37}
-                />
-              </Link>
-            </>
-
+            <Link href='/profile'>
+              <Image
+                /* src={'/assets/icons/user.svg'}*/
+                src={session?.user.image}
+                alt='Profile'
+                width={37}
+                height={37}
+                className='rounded-full'
+              />
+            </Link>
+          </>
+          )
+          : (
             <>
               {providers &&
                 Object.values(providers).map((provider) => (
@@ -67,6 +71,8 @@ function Nav() {
                   </button>
                 ))}
             </>
+          )
+        }
 
       </div>
 
