@@ -4,10 +4,6 @@ import GoogleProvider, {GoogleProfile} from 'next-auth/providers/google'
 import {connectToDB} from '@utils/database'
 import User from '@models/user'
 
-interface SessionUser {
-  _id: string
-}
-
 const handler = NextAuth({
   providers: [
     GoogleProvider({

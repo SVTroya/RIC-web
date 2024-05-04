@@ -45,8 +45,7 @@ function Nav() {
 
             <Link href='/profile'>
               <Image
-                /* src={'/assets/icons/user.svg'}*/
-                src={session?.user.image}
+                src={session?.user.image as string}
                 alt='Profile'
                 width={37}
                 height={37}
@@ -73,9 +72,7 @@ function Nav() {
             </>
           )
         }
-
       </div>
-
     </nav>
   )
 }

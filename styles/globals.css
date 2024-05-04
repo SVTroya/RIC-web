@@ -102,3 +102,19 @@ body{
 .goal_card {
     @apply shadow-2xl hover:scale-105 transition-transform cursor-pointer
 }
+
+.light_blue {
+    @apply text-blue-400
+}
+
+.dark_blue {
+    @apply text-blue-800
+}
+
+.light_red {
+    @apply text-orange-400
+}
+
+.dark_red {
+    @apply text-orange-800
+}
