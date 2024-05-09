@@ -11,7 +11,11 @@ function ExpansionsList({expansions}: Props) {
       </div>
       {expansions.map(expansion => (
           <div key={expansion._id} className='flex gap-2 m-1'>
-            <input type='radio' id={expansion._id} name='exp' value={expansion.name}/>
+            <input
+              type='radio'
+              id={expansion._id}
+              name='exp'
+              value={expansion.name}/>
             <label htmlFor={expansion._id}>{expansion.name}<span className={expansion.color.toLowerCase().replace(' ', '_')}> ({expansion.color})</span></label>
           </div>
         ))}
