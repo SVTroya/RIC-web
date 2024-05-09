@@ -34,7 +34,6 @@ function GameSetup() {
       fetchAllExpansions()
     }
     else {
-      console.log('ExpList:', session?.user.expList)
       fetchExpansionsById(session?.user.expList)
     }
   }, [session])
