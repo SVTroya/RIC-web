@@ -6,19 +6,38 @@ import Link from 'next/link'
 import {useSession} from 'next-auth/react'
 
 function GameSetup() {
-  const {data:session} = useSession()
+  const {data: session} = useSession()
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
 
   async function fetchAllExpansions() {
-    const res  = await fetch('api/expansions')
+    const res = await fetch('api/expansions')
+    const data = await res.json()
+
+    setExpansions(data)
+  }
+
+  async function fetchExpansionsById(expIds: Array<string>) {
+    const res = await fetch('api/expansions', {
+      method:'POST',
+      body: JSON.stringify({
+        expIds: expIds
+      })
+    })
+
     const data = await res.json()
 
     setExpansions(data)
   }
 
   useEffect(() => {
-    fetchAllExpansions()
-  }, [])
+    if (session === null || (session && !session.user.expList)) {
+      fetchAllExpansions()
+    }
+    else {
+      console.log('ExpList:', session?.user.expList)
+      fetchExpansionsById(session?.user.expList)
+    }
+  }, [session])
 
   return (
     <section className='flex gap-10 flex-col items-center'>
@@ -32,6 +51,15 @@ function GameSetup() {
       <Link href='game' className='btn'>
         Start
       </Link>
+      {!session?.user && (
+        <p className='text'>
+          <button
+            type='button'
+            className='text-orange-500 hover:underline'>
+            Sign Up
+          </button>
+          {' '}to customise your expansion list</p>
+      )}
     </section>
   )
 }

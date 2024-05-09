@@ -2,7 +2,8 @@ interface SessionUser {
   _id: string,
   email: string,
   username: string,
-  image: string
+  image: string,
+  expList: Array<string>
 }
 
 type Expansion = {

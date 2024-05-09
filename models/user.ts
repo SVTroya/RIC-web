@@ -1,4 +1,5 @@
 import {Schema, model, models} from 'mongoose'
+import Expansion from '@models/expansion'
 
 const userSchema = new Schema({
   email: {
@@ -14,7 +15,11 @@ const userSchema = new Schema({
   },
   image: {
     type: String
-  }
+  },
+  expList: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Expansion'
+  }]
 })
 
 const User = models.User || model('User', userSchema)

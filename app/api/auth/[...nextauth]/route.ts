@@ -13,11 +13,12 @@ const handler = NextAuth({
   ],
   callbacks: {
     async session({session}: { session: Session }) {
-      const sessionUser = User.findOne({
+      const sessionUser = await User.findOne({
         email: session.user.email as string
       }) as unknown as SessionUser
 
       session.user.id = sessionUser._id?.toString()
+      session.user.expList = sessionUser.expList
 
       return session
     },

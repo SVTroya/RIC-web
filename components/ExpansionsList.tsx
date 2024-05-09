@@ -9,14 +9,12 @@ function ExpansionsList({expansions}: Props) {
         <input type='radio' id='no' name='exp' value='Without expansion' defaultChecked/>
         <label htmlFor='no'>None</label>
       </div>
-      {
-        expansions.map(expansion => (
-          <div key={expansion.name} className='flex gap-2 m-1'>
-            <input type='radio' id={expansion.name.toLowerCase()} name='exp' value={expansion.name}/>
+      {expansions.map(expansion => (
+          <div key={expansion._id} className='flex gap-2 m-1'>
+            <input type='radio' id={expansion._id} name='exp' value={expansion.name}/>
             <label htmlFor={expansion.name.toLowerCase()}>{expansion.name}<span className={expansion.color.toLowerCase().replace(' ', '_')}> ({expansion.color})</span></label>
           </div>
-        ))
-      }
+        ))}
     </form>
   )
 }

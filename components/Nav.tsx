@@ -21,7 +21,7 @@ function Nav() {
   }, [])
 
   return (
-    <nav className='w-full py-5 flex justify-between'>
+    <nav className='w-full h-20 py-5 flex justify-between'>
       <Link href='/'
             className='flex items-center gap-2 text-gray-900 font-semibold text-xl transition ease-in-out duration-300 hover:text-orange-500'>
         <Image
@@ -43,7 +43,9 @@ function Nav() {
               Sign Out
             </button>
 
-            <Link href='/profile'>
+            <Link
+              href='/profile'
+            className='flex items-center'>
               <Image
                 src={session?.user.image as string}
                 alt='Profile'
