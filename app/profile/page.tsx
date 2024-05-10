@@ -18,34 +18,36 @@ function Profile() {
 
   useEffect(() => {
     fetchAllExpansions()
+
+    if (session?.user.expList) {
+      setCheckedExpansions(session?.user.expList)
+    }
   }, [])
 
   useEffect(() => {
     if (session?.user.expList) {
       setCheckedExpansions(session?.user.expList)
     }
-
   }, [session])
 
   function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    /*try{
-      const res = fetch(`api/users/${session?.user.id}`, {
+    try{
+      fetch(`api/users/${session?.user.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
-       /!*   expList: *!/
+          expList: checkedExpansions
         })
       })
     }
     catch (e) {
       console.log(e)
-    }*/
+    }
+    finally {
+      setWasChanged(false)
+    }
   }
-
-  useEffect(() => {
-    console.log(checkedExpansions)
-  }, [checkedExpansions])
 
   function handleExpansionChange(e: React.ChangeEvent<HTMLInputElement>) {
     setWasChanged(true)
@@ -54,16 +56,6 @@ function Profile() {
     }
     else {
       setCheckedExpansions(prevState => {
-        /*console.log(prevState)
-        console.log(prevState.indexOf(e.target.value))
-        const index = prevState.indexOf(e.target.value)
-
-        if (index >= 0) {
-          return prevState.splice(index, 1)
-        }
-
-        return prevState*/
-
         return prevState.filter(id => id !== e.target.value)
       })
     }
