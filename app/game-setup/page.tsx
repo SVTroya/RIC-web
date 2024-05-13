@@ -16,6 +16,12 @@ function GameSetup() {
 
   const router = useRouter()
 
+  useEffect(() => {
+    if (setExpansionId) {
+      setExpansionId(null)
+    }
+  }, [])
+
   async function fetchAllExpansions() {
     const res = await fetch('api/expansions')
     const data = await res.json()
