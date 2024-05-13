@@ -41,11 +41,10 @@ function Profile() {
         })
       }).then(() => {
         update()
+        setWasChanged(false)
       })
     } catch (e) {
       console.log(e)
-    } finally {
-      setWasChanged(false)
     }
   }
 
@@ -57,7 +56,6 @@ function Profile() {
       })
     } else {
       setCheckedExpansions(prevState => {
-
         return prevState.filter(id => id !== e.target.value)
       })
     }

@@ -2,12 +2,19 @@
 
 import React, {useEffect, useState} from 'react'
 import ExpansionsList from '@components/ExpansionsList'
-import Link from 'next/link'
 import {useSession} from 'next-auth/react'
+import {useGame} from '@components/Provider'
+import { useRouter } from 'next/navigation'
 
 function GameSetup() {
   const {data: session} = useSession()
+
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
+  const [chosenExpansionId, setChosenExpansionId] = useState<string | null>(null)
+
+  const {setExpansionId} = useGame()
+
+  const router = useRouter()
 
   async function fetchAllExpansions() {
     const res = await fetch('api/expansions')
@@ -18,7 +25,7 @@ function GameSetup() {
 
   async function fetchExpansionsById(expIds: Array<string>) {
     const res = await fetch('api/expansions', {
-      method:'POST',
+      method: 'POST',
       body: JSON.stringify({
         expIds: expIds
       })
@@ -32,24 +39,31 @@ function GameSetup() {
   useEffect(() => {
     if (session === null || (session && !session.user.expList)) {
       fetchAllExpansions()
-    }
-    else {
+    } else {
       fetchExpansionsById(session?.user.expList)
     }
   }, [session])
+
+  function handleStartClick() {
+    if (setExpansionId) {
+      setExpansionId(chosenExpansionId)
+    }
+
+    router.push("/game");
+  }
 
   return (
     <section className='flex gap-10 flex-col items-center'>
       <h1 className=' max-w-176 head_text text-center'>
         Select an expansion
       </h1>
-      <ExpansionsList expansions={expansions}/>
-      {/*<button className='btn'>
+      <ExpansionsList expansions={expansions} setChosenExpansionId={setChosenExpansionId}/>
+      <button
+        className='btn'
+        onClick={handleStartClick}
+      >
         Start
-      </button>*/}
-      <Link href='game' className='btn'>
-        Start
-      </Link>
+      </button>
       {!session?.user && (
         <p className='text'>
           <button
