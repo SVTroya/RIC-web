@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react'
 import {useSession} from 'next-auth/react'
 
 function Profile() {
-  const {data: session} = useSession()
+  const {data: session, update} = useSession()
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
   const [wasChanged, setWasChanged] = useState(false)
   const [checkedExpansions, setCheckedExpansions] = useState<Array<string>>([])
@@ -33,18 +33,18 @@ function Profile() {
   function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
-    try{
+    try {
       fetch(`api/users/${session?.user.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
           expList: checkedExpansions
         })
+      }).then(() => {
+        update()
       })
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e)
-    }
-    finally {
+    } finally {
       setWasChanged(false)
     }
   }
@@ -52,10 +52,12 @@ function Profile() {
   function handleExpansionChange(e: React.ChangeEvent<HTMLInputElement>) {
     setWasChanged(true)
     if (e.target.checked) {
-      setCheckedExpansions(prevState => {return [...prevState, e.target.value]})
-    }
-    else {
       setCheckedExpansions(prevState => {
+        return [...prevState, e.target.value]
+      })
+    } else {
+      setCheckedExpansions(prevState => {
+
         return prevState.filter(id => id !== e.target.value)
       })
     }
