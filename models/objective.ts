@@ -7,7 +7,8 @@ const objectiveSchema = new Schema({
   },
   image: {
     type: String,
-    required: [true, 'Name of objective\'s image is required!']
+    required: [true, 'Name of objective\'s image is required!'],
+    unique: [true, 'Image file for objective must be unique!']
   }
 })
 
