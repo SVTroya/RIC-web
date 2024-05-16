@@ -15,7 +15,7 @@ const handler = NextAuth({
     async session({session}: { session: Session }) {
       const sessionUser = await User.findOne({
         email: session.user.email as string
-      }) as unknown as SessionUser
+      }).populate('expList') as unknown as SessionUser
 
       session.user.id = sessionUser._id?.toString()
       session.user.expList = sessionUser.expList

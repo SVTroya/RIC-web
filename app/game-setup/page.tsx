@@ -10,7 +10,7 @@ function GameSetup() {
   const {data: session} = useSession()
 
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
-  const [chosenExpansion, setChosenExpansion] = useState<string | null>(null)
+  const [chosenExpansion, setChosenExpansion] = useState<string>('none')
 
   const {setExpansion} = useGame()
 
@@ -18,45 +18,26 @@ function GameSetup() {
 
   useEffect(() => {
     if (setExpansion) {
-      setExpansion(null)
+      setExpansion('none')
     }
   }, [])
 
   async function fetchAllExpansions() {
     const res = await fetch('api/expansions')
-
-    const data = await res.json()
-
-    setExpansions(data)
-  }
-
-  async function fetchExpansionsById(expIds: Array<string>) {
-    const res = await fetch('api/expansions', {
-      method: 'POST',
-      body: JSON.stringify({
-        expIds: expIds
-      })
-    })
-
     const data = await res.json()
 
     setExpansions(data)
   }
 
   useEffect(() => {
-    try {
-      if (session === null || (session && !session?.user.expList)) {
-        fetchAllExpansions().catch(error => {
-          console.error(error)
-        })
-      } else if (session) {
-        fetchExpansionsById(session?.user.expList).catch(error => {
-          console.error(error)
-        })
-      }
-    } catch (e) {
-      console.log('Log:', e)
+    if (session === null || (session && !session?.user.expList)) {
+      fetchAllExpansions().catch(error => {
+        console.error(error)
+      })
+    } else if (session) {
+      setExpansions(session.user.expList.sort((a, b) => a._id.localeCompare(b._id)))
     }
+
   }, [session])
 
   function handleStartClick() {

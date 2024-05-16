@@ -8,19 +8,19 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   try {
     await connectToDB();
 
-    const user = await User.findById(params.id);
+    const user = await User.findById(params.id)
 
     if (!user) {
-      return new Response("User not found", { status: 404 });
+      return new Response("User not found", { status: 404 })
     }
 
     user.expList = expList;
 
     await user.save();
 
-    return new Response("User successfully updated", { status: 200 });
+    return new Response("User successfully updated", { status: 200 })
   } catch (error) {
-    console.log(error)
-    return new Response("Error Updating User!", { status: 500 });
+    console.error(error)
+    return new Response("Error Updating User!", { status: 500 })
   }
 }

@@ -3,7 +3,7 @@ interface SessionUser {
   email: string,
   username: string,
   image: string,
-  expList: Array<string>
+  expList: Array<Expansion>
 }
 
 type Expansion = {
@@ -16,4 +16,10 @@ type Die = {
   _id: string,
   die_type: string,
   faces: Array<string>,
+}
+
+type Objective = {
+  _id: string,
+  exp: string,
+  image: string
 }

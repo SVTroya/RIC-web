@@ -17,16 +17,16 @@ function Profile() {
   }
 
   useEffect(() => {
-    fetchAllExpansions()
+    fetchAllExpansions().catch(error => console.error(error))
 
     if (session?.user.expList) {
-      setCheckedExpansions(session?.user.expList)
+      setCheckedExpansions(session?.user.expList.map(expansion => expansion._id))
     }
   }, [])
 
   useEffect(() => {
     if (session?.user.expList) {
-      setCheckedExpansions(session?.user.expList)
+      setCheckedExpansions(session?.user.expList.map(expansion => expansion._id))
     }
   }, [session])
 
@@ -40,7 +40,7 @@ function Profile() {
           expList: checkedExpansions
         })
       }).then(() => {
-        update()
+        update().catch(error => console.error(error))
         setWasChanged(false)
       })
     } catch (e) {
@@ -56,6 +56,7 @@ function Profile() {
       })
     } else {
       setCheckedExpansions(prevState => {
+
         return prevState.filter(id => id !== e.target.value)
       })
     }
