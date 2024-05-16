@@ -20,6 +20,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     return new Response("User successfully updated", { status: 200 });
   } catch (error) {
+    console.log(error)
     return new Response("Error Updating User!", { status: 500 });
   }
 }

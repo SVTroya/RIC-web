@@ -11,3 +11,9 @@ type Expansion = {
   name: string,
   color: string
 }
+
+type Die = {
+  _id: string,
+  die_type: string,
+  faces: Array<string>,
+}

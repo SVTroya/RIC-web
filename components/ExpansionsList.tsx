@@ -2,14 +2,14 @@ import React, {Dispatch, SetStateAction} from 'react'
 
 type Props = {
   expansions: Array<Expansion>,
-  setChosenExpansionId: Dispatch<SetStateAction<string | null>>
+  setChosenExpansion: Dispatch<SetStateAction<string | null>>
 }
 
-function ExpansionsList({expansions, setChosenExpansionId}: Props) {
+function ExpansionsList({expansions, setChosenExpansion}: Props) {
 
   function handleExpansionChange(e: React.MouseEvent<HTMLInputElement>) {
     const value = (e.target as HTMLInputElement).value
-    setChosenExpansionId(value === 'no' ? null : value)
+    setChosenExpansion(value === 'no' ? null : value.toLowerCase())
   }
 
   return (
@@ -33,7 +33,7 @@ function ExpansionsList({expansions, setChosenExpansionId}: Props) {
             type='radio'
             id={expansion._id}
             name='exp'
-            value={expansion._id}
+            value={expansion.name}
             onClick={(e) => {
               handleExpansionChange(e)
             }}

@@ -4,26 +4,27 @@ import React, {useEffect, useState} from 'react'
 import ExpansionsList from '@components/ExpansionsList'
 import {useSession} from 'next-auth/react'
 import {useGame} from '@components/Provider'
-import { useRouter } from 'next/navigation'
+import {useRouter} from 'next/navigation'
 
 function GameSetup() {
   const {data: session} = useSession()
 
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
-  const [chosenExpansionId, setChosenExpansionId] = useState<string | null>(null)
+  const [chosenExpansion, setChosenExpansion] = useState<string | null>(null)
 
-  const {setExpansionId} = useGame()
+  const {setExpansion} = useGame()
 
   const router = useRouter()
 
   useEffect(() => {
-    if (setExpansionId) {
-      setExpansionId(null)
+    if (setExpansion) {
+      setExpansion(null)
     }
   }, [])
 
   async function fetchAllExpansions() {
     const res = await fetch('api/expansions')
+
     const data = await res.json()
 
     setExpansions(data)
@@ -43,19 +44,27 @@ function GameSetup() {
   }
 
   useEffect(() => {
-    if (session === null || (session && !session.user.expList)) {
-      fetchAllExpansions()
-    } else {
-      fetchExpansionsById(session?.user.expList)
+    try {
+      if (session === null || (session && !session?.user.expList)) {
+        fetchAllExpansions().catch(error => {
+          console.error(error)
+        })
+      } else if (session) {
+        fetchExpansionsById(session?.user.expList).catch(error => {
+          console.error(error)
+        })
+      }
+    } catch (e) {
+      console.log('Log:', e)
     }
   }, [session])
 
   function handleStartClick() {
-    if (setExpansionId) {
-      setExpansionId(chosenExpansionId)
+    if (setExpansion) {
+      setExpansion(chosenExpansion)
     }
 
-    router.push("/game");
+    router.push('/game')
   }
 
   return (
@@ -63,7 +72,7 @@ function GameSetup() {
       <h1 className=' max-w-176 head_text text-center'>
         Select an expansion
       </h1>
-      <ExpansionsList expansions={expansions} setChosenExpansionId={setChosenExpansionId}/>
+      <ExpansionsList expansions={expansions} setChosenExpansion={setChosenExpansion}/>
       <button
         className='btn'
         onClick={handleStartClick}
