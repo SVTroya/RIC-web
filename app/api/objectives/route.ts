@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
 
     const objectivesList = await Objective.find({exp: exp ? {$in: ['base', exp]} : 'base'})
 
-    console.log('Objectives List:', objectivesList)
     return new Response(JSON.stringify(objectivesList), {status: 200})
   } catch (e) {
     console.error('Error:', e)

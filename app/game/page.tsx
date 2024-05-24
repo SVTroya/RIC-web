@@ -1,16 +1,20 @@
 'use client'
 
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import DiceSet from '@components/DiceSet'
 import ObjectivesList from '@components/ObjectivesList'
 import {useGame} from '@components/Provider'
 import {log} from 'util'
+import {useRouter} from 'next/navigation'
 
 function Game() {
-  let roundNumber = 1
+  const router = useRouter()
+  const {setExpansion} = useGame()
 
   const [dice, setDice] = useState<Array<Die>>([])
+  const [displayedDice, setDisplayedDice] = useState<Array<string>>([])
   const [objectives, setObjectives] = useState<Array<Objective>>([])
+  const [roundNumber, setRoundNumber] = useState<number>(0)
 
   const {expansion} = useGame()
 
@@ -21,6 +25,11 @@ function Game() {
     }
   }, [expansion])
 
+  useEffect(() => {
+    console.log('Dice set changed:', dice)
+    if (dice.length) rollDice()
+  }, [dice])
+
   async function fetchDice(expansion: string) {
     const res = await fetch(`api/dice`.concat(expansion !== 'none' ? `?exp=${expansion}` : ''))
 
@@ -30,17 +39,15 @@ function Game() {
     setDice(diceSet)
   }
 
-  async function fetchObjectives(expansion: string)
-  {
+  async function fetchObjectives(expansion: string) {
     const res = await fetch(`api/objectives${expansion !== 'none' ? `?exp=${expansion}` : ''}`)
-    /*const res = await fetch(`api/objectives`.concat(expansion !== 'none' ? `?exp=${expansion}` : ''))*/
 
     const data = await res.json()
 
     const baseObjectives = (data as Array<Objective>).filter(objective => objective.exp === 'base')
     const expansionObjectives = expansion ? (data as Array<Objective>).filter(objective => objective.exp === expansion) : []
 
-    const objectivesSet : Array<Objective> = [...getRandomObjective(baseObjectives, expansion ? 2 : 3)]
+    const objectivesSet: Array<Objective> = [...getRandomObjectives(baseObjectives, expansion ? 2 : 3)]
 
     if (expansion) {
       objectivesSet.push(expansionObjectives[Math.floor(Math.random() * expansionObjectives.length)])
@@ -48,7 +55,7 @@ function Game() {
     setObjectives(objectivesSet)
   }
 
-  function getRandomObjective(objectivesArray: Array<Objective>, number: number) {
+  function getRandomObjectives(objectivesArray: Array<Objective>, number: number) {
     const count = objectivesArray.length
     const randomObjectives: Array<Objective> = []
 
@@ -63,15 +70,45 @@ function Game() {
     return randomObjectives
   }
 
+  function rollDice() {
+    setDisplayedDice(dice.map(die => die.faces[Math.floor(Math.random() * die.faces.length)]))
+    setRoundNumber(prevState => prevState + 1)
+  }
+
+  function handleFinish() {
+    if (setExpansion) {
+      setExpansion('none')
+    }
+
+    router.push('/')
+  }
+
   return (
     <section className='w-full relative mb-8 flex flex-col items-center gap-16'>
       <h1 className='head_text'>
         Round <span className='text-orange-500'>#{roundNumber}</span>
       </h1>
-      <DiceSet dice={dice}/>
-      <button className='btn'>Next Round</button>
+      <DiceSet diceFaces={displayedDice}/>
+      {(roundNumber < 6)
+        ? (
+          <button
+            className='btn'
+            onClick={rollDice}>
+            Next Round
+          </button>
+        )
+        : (
+          <button
+            className='btn'
+          onClick={handleFinish}>
+            Finish Game
+          </button>
+        )}
+
       <ObjectivesList objectives={objectives}/>
-      <button className='absolute top-5 right-0 text-gray-900 hover:text-orange-500' aria-label='Rules'>
+      <button
+        className='absolute top-5 right-0 text-gray-900 hover:text-orange-500'
+        aria-label='Rules'>
         <svg
           width={40}
           height={40}
