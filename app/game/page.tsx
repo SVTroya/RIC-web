@@ -25,7 +25,6 @@ function Game() {
   }, [expansion])
 
   useEffect(() => {
-    console.log('Dice set changed:', dice)
     if (dice.length) rollDice()
   }, [dice])
 
