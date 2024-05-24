@@ -1,10 +1,9 @@
 'use client'
 
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import DiceSet from '@components/DiceSet'
 import ObjectivesList from '@components/ObjectivesList'
 import {useGame} from '@components/Provider'
-import {log} from 'util'
 import {useRouter} from 'next/navigation'
 
 function Game() {
