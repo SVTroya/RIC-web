@@ -3,6 +3,7 @@ import GoogleProvider, {GoogleProfile} from 'next-auth/providers/google'
 
 import {connectToDB} from '@utils/database'
 import User from '@models/user'
+import Expansion from '@models/expansion'
 
 const handler = NextAuth({
   providers: [
@@ -15,7 +16,7 @@ const handler = NextAuth({
     async session({session}: { session: Session }) {
       const sessionUser = await User.findOne({
         email: session.user.email as string
-      }).populate('expList') as unknown as SessionUser
+      })?.populate({ path: 'expList', model: Expansion }) as unknown as SessionUser
 
       session.user.id = sessionUser._id?.toString()
       session.user.expList = sessionUser.expList
