@@ -8,14 +8,12 @@ import {useRouter} from 'next/navigation'
 
 function Game() {
   const router = useRouter()
-  const {setExpansion} = useGame()
+  const {expansion, setExpansion} = useGame()
 
   const [dice, setDice] = useState<Array<Die>>([])
-  const [displayedDice, setDisplayedDice] = useState<Array<string>>([])
+  const [displayedDice, setDisplayedDice] = useState<Array<Face>>([])
   const [objectives, setObjectives] = useState<Array<Objective>>([])
   const [roundNumber, setRoundNumber] = useState<number>(0)
-
-  const {expansion} = useGame()
 
   useEffect(() => {
     if (expansion) {
@@ -69,7 +67,9 @@ function Game() {
   }
 
   function rollDice() {
-    setDisplayedDice(dice.map(die => die.faces[Math.floor(Math.random() * die.faces.length)]))
+    setDisplayedDice(dice.map(die => {
+      return {image: die.faces[Math.floor(Math.random() * die.faces.length)], rotatable: die.rotatable}
+    }))
     setRoundNumber(prevState => prevState + 1)
   }
 
@@ -84,7 +84,7 @@ function Game() {
   return (
     <section className='w-full relative mb-8 flex flex-col items-center gap-16'>
       <h1 className='head_text'>
-        Round <span className='text-orange-500'>#{roundNumber}</span>
+        Round <span className='text-orange-500'>#{(roundNumber === 0) ? 1 : roundNumber}</span>
       </h1>
       <DiceSet diceFaces={displayedDice}/>
       {(roundNumber < 6)
@@ -98,7 +98,7 @@ function Game() {
         : (
           <button
             className='btn'
-          onClick={handleFinish}>
+            onClick={handleFinish}>
             Finish Game
           </button>
         )}

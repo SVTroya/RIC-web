@@ -16,6 +16,12 @@ type Die = {
   _id: string,
   die_type: string,
   faces: Array<string>,
+  rotatable: boolean
+}
+
+type Face = {
+  image: string,
+  rotatable: boolean
 }
 
 type Objective = {

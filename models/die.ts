@@ -8,6 +8,10 @@ const dieSchema = new Schema({
   faces: {
     type: Array,
     required: [true, "Set of die's faces is required!"]
+  },
+  rotatable: {
+    type: Boolean,
+    required: [true, "Rotatable param is required!"]
   }
 })
 
