@@ -1,39 +1,64 @@
 'use client'
-import {useRouter, useSearchParams} from 'next/navigation'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 
 type Props = {
-/*  onClose(): () => void,*/
+  showModal: boolean,
+  onClose(): void,
   children: React.ReactNode
 }
 
-function Modal({/*onClose,*/ children}: Props) {
-  const searchParams = useSearchParams()
+function Modal({showModal, onClose, children}: Props) {
   const dialogRef = useRef<HTMLDialogElement | null>(null)
-  const showModal = searchParams.get('showModal')
-  const router = useRouter()
+  const [actuallyShown, setActuallyShown] = useState<boolean>(true)
+  const [scale, setScale] = useState<number>(0)
 
   useEffect(() => {
-    if (showModal === 'y') {
+    if (showModal) {
       dialogRef.current?.showModal()
-    } else {
-      dialogRef.current?.close()
+      setActuallyShown(true)
+      setScale(100)
+    }
+    else {
+      setScale(0)
+
+      setTimeout(() => {
+        setActuallyShown(false)
+        dialogRef.current?.close()
+      }, 300)
     }
   }, [showModal])
 
-  function handleClose() {
-    dialogRef.current?.close()
-    router.back()
-   /* onClose()*/
+  function handleESCClose(e: React.SyntheticEvent) {
+    e.preventDefault()
+    onClose()
   }
 
-  const dialog: React.JSX.Element | null = (showModal === 'y')
+  function handleBackdropClose() {
+    onClose()
+  }
+
+  function isClickInsideRectangle (e: React.MouseEvent, element: HTMLElement) {
+    const rect = element.getBoundingClientRect();
+
+    return (
+      e.clientX >= rect.left &&
+      e.clientX <= rect.right &&
+      e.clientY >= rect.top &&
+      e.clientY <= rect.bottom
+    )
+  }
+
+  const dialog: React.JSX.Element | null = (actuallyShown || showModal)
     ? (
-      <dialog ref={dialogRef} className='fixed top-50 left-50 -translate-x-50 -translate-y-50 z-10 rounded-xl backdrop:bg-gray-800/50 p-8 shadow-lg'>
-        <div className='flex justify-center items-center'>
-          <div className='max-w-[1000px] bg-white'>
+      <dialog ref={dialogRef}
+              onCancel={(e) => {handleESCClose(e)}}
+              onClick={(e) =>
+                dialogRef.current && !isClickInsideRectangle(e, dialogRef.current) && handleBackdropClose()
+              }
+              className={`scroll-m-1 bg-orange-400 fixed z-10 rounded-xl backdrop:bg-gray-800/20 p-8 shadow-lg scale-${scale.toString()} transition-transform duration-300 ease-in-out`}>
+        <div className='w-max h-max relative flex flex-col'>
+          <div className='flex flex-col justify-center items-center max-w-[1000px]'>
             {children}
-            <button onClick={handleClose}>Close</button>
           </div>
         </div>
       </dialog>
