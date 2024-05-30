@@ -5,6 +5,8 @@ import DiceSet from '@components/DiceSet'
 import ObjectivesList from '@components/ObjectivesList'
 import {useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
+import Modal from '@components/Modal'
+import Rules from '@components/Rules'
 
 function Game() {
   const router = useRouter()
@@ -14,6 +16,7 @@ function Game() {
   const [displayedDice, setDisplayedDice] = useState<Array<Face>>([])
   const [objectives, setObjectives] = useState<Array<Objective>>([])
   const [roundNumber, setRoundNumber] = useState<number>(0)
+  const [toggleRules, setToggleRules] = useState<boolean>(false)
 
   useEffect(() => {
     if (expansion) {
@@ -105,8 +108,9 @@ function Game() {
 
       <ObjectivesList objectives={objectives}/>
       <button
-        className='absolute top-5 right-0 text-gray-900 hover:text-orange-500'
-        aria-label='Rules'>
+        className='absolute top-5 right-0 text-gray-900 hover:text-orange-500 outline-0'
+        aria-label='Rules'
+        onClick={() => setToggleRules(true)}>
         <svg
           width={40}
           height={40}
@@ -114,6 +118,9 @@ function Game() {
           <use href='/assets/icons/icons.svg#icon-question'/>
         </svg>
       </button>
+      <Modal showModal={toggleRules} onClose={() => setToggleRules(false)}>
+        <Rules onClose={() => setToggleRules(false)}/>
+      </Modal>
     </section>
   )
 }
