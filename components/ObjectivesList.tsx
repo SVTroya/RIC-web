@@ -12,7 +12,7 @@ function ObjectivesList({objectives}: Props) {
   }
 
   return (
-    <ul className='flex gap-8 sm:gap-10 mb-2 flex-col sm:flex-row'>
+    <ul className='flex gap-8 mb-2 flex-col items-center sm:flex-row sm:flex-wrap sm:w-[500px] md:w-[576px] lg:w-max'>
       {objectives.map((objective, index) => (
           <li key={objective?._id}
               className='objective_card'
@@ -21,11 +21,11 @@ function ObjectivesList({objectives}: Props) {
             <Image
               src={`/assets/images/goals/${objective?.image}`}
               alt={`Objective #${index + 1}`}
-              width={300}
-              height={210}
+              width={1027}
+              height={717}
             />
             <div
-              className='w-[300px] h-[210px] scale-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-500 rounded-2xl bg-orange-300 p-4'>
+              className='objective_description scale-0'>
               <p>
                 {objective?.description}
               </p>

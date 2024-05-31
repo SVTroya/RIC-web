@@ -18,8 +18,7 @@ function Modal({showModal, onClose, children, backgroundColor = null}: Props) {
       dialogRef.current?.showModal()
       setActuallyShown(true)
       setScale(100)
-    }
-    else if (actuallyShown) {
+    } else if (actuallyShown) {
       setScale(0)
 
       setTimeout(() => {
@@ -38,8 +37,8 @@ function Modal({showModal, onClose, children, backgroundColor = null}: Props) {
     onClose()
   }
 
-  function isClickInsideRectangle (e: React.MouseEvent, element: HTMLElement) {
-    const rect = element.getBoundingClientRect();
+  function isClickInsideRectangle(e: React.MouseEvent, element: HTMLElement) {
+    const rect = element.getBoundingClientRect()
 
     return (
       e.clientX >= rect.left &&
@@ -52,7 +51,9 @@ function Modal({showModal, onClose, children, backgroundColor = null}: Props) {
   const dialog: React.JSX.Element | null = (actuallyShown || showModal)
     ? (
       <dialog ref={dialogRef}
-              onCancel={(e) => {handleESCClose(e)}}
+              onCancel={(e) => {
+                handleESCClose(e)
+              }}
               onClick={(e) =>
                 dialogRef.current && !isClickInsideRectangle(e, dialogRef.current) && handleBackdropClose()
               }

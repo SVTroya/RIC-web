@@ -6,7 +6,7 @@ type Props = {
 
 function Rules({onClose}: Props) {
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-4 md:gap-6'>
       <h2 className='text-4xl font-medium text-gray-900 text-center'>Rules</h2>
 
       <div className='rule'>

@@ -102,7 +102,7 @@ function Game() {
   }
 
   function handleBlueprintSidebar(target: HTMLDivElement) {
-    target.classList.toggle('-translate-x-[203px]')
+    target.classList.toggle('blueprint_remainder_show')
   }
 
   return (
@@ -143,14 +143,16 @@ function Game() {
       {
         blueprint && (
           <div
-            className={`cursor-pointer rounded-l-lg overflow-clip flex absolute -right-[203px] top-24 transition-transform ease-in-out duration-1000`}
+            className={`cursor-pointer rounded-l-lg overflow-clip flex absolute -right-[147px] top-24 transition-transform ease-in-out duration-1000 md:-right-[203px]`}
             onClick={(e) => handleBlueprintSidebar(e.currentTarget as HTMLDivElement)}>
-            <p className='bg-orange-500 text-white {/* font-semibold*/} text-center text-2xl p-4'>B<br/>l<br/>u<br/>e<br/>p<br/>r<br/>i<br/>n<br/>t</p>
+            <p className='bg-orange-500 text-white text-center p-2 text-lg leading-[1.15] md:leading-[1.2] md:text-2xl md:p-4'>B<br/>l<br/>u<br/>e<br/>p<br/>r<br/>i<br/>n<br/>t
+            </p>
             <Image
               src={'/assets/images/blueprints/' + blueprint}
               alt='Blueprint'
-              width={203}
-              height={288}/>
+              width={1027}
+              height={717}
+              className='h-auto w-[147px] md:w-[203px]'/>
           </div>
         )
       }

@@ -72,7 +72,7 @@ function BlueprintSelect() {
           Select
         </button>
         <Link
-          className='text-orange-600 self-center'
+          className='text-orange-600 self-center transition-colors hover:text-gray-900'
           href='/game'>
           Play without blueprint
         </Link>
