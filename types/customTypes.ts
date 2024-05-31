@@ -27,5 +27,12 @@ type Face = {
 type Objective = {
   _id: string,
   exp: string,
+  image: string,
+  description: string
+}
+
+type Blueprint = {
+  _id: string,
+  name: string,
   image: string
 }
