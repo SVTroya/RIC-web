@@ -167,7 +167,7 @@ function Rules({onClose}: Props) {
         </p>
       </div>
 
-      <button className='btn_small self-center outline-0' onClick={onClose}>Close</button>
+      <button className='btn_small self-center' onClick={onClose}>Close</button>
     </div>
   )
 }

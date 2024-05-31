@@ -78,7 +78,7 @@ body{
 }
 
 .head_text {
-    @apply text-6xl leading-[1.15] text-gray-900;
+    @apply text-4xl leading-[1.15] text-gray-900 text-center sm:text-6xl;
 }
 
 .orange_gradient {
@@ -90,7 +90,7 @@ body{
 }
 
 .rule {
-    @apply text-gray-900 text-justify font-medium bg-white rounded-lg p-2 shadow-lg bg-orange-200
+    @apply text-gray-900 text-justify font-medium rounded-lg p-2 shadow-lg bg-orange-200
 }
 
 .rule_text_header {
@@ -101,29 +101,65 @@ body{
     @apply text-gray-900 text-justify italic font-satoshi block font-normal
 }
 
+.blueprint_text_header {
+    @apply text-gray-900 text-2xl font-semibold text-center
+}
+
+.blueprint_name {
+    @apply text-gray-900 text-lg font-semibold
+}
+
+.blueprint_image {
+    @apply h-72 w-[203px] rounded-md overflow-clip shadow-xl
+}
+
+.blueprint_card {
+    @apply hover:scale-105 transition-transform duration-200 ease-in-out flex-col items-center gap-2 hidden
+}
+
+.blueprint_card:hover>div {
+    @apply shadow-2xl
+}
+
+.selected_blueprint_card {
+    @apply scale-105 transition-transform flex flex-col items-center gap-2
+}
+
+.selected_blueprint_card>div  {
+    @apply shadow-2xl shadow-orange-300
+}
+
+.selected_blueprint_card:hover>div  {
+    @apply shadow-orange-300
+}
+
 .btn {
-    @apply py-2 px-4 rounded-full bg-orange-500 shadow-2xl transition ease-in-out duration-200
-    flex justify-center items-center cursor-pointer text-2xl min-w-32 font-semibold text-gray-900
-    hover:shadow-xl hover:translate-y-0.5 hover:text-white;
+    @apply py-1 px-4 rounded-full bg-orange-500 shadow-2xl transition ease-in-out duration-200
+    flex justify-center items-center cursor-pointer text-xl min-w-20 font-semibold text-gray-900
+    hover:shadow-xl hover:translate-y-0.5 hover:text-white outline-0 sm:text-2xl sm:min-w-32 sm:py-2
 }
 
 .btn_small {
     @apply py-1 px-6 rounded-full bg-orange-500 shadow-2xl transition ease-in-out duration-200
     flex justify-center items-center cursor-pointer font-semibold text-gray-900
     enabled:hover:shadow-xl enabled:hover:translate-y-0.5 hover:text-white
-    disabled:bg-gray-300 disabled:text-gray-400
+    disabled:bg-gray-300 disabled:text-gray-400 outline-0
 }
 
 .dice {
-    @apply h-60 mx-auto min-w-128 grid grid-cols-3 gap-10;
+    @apply mx-auto grid grid-cols-2 gap-10 sm:h-60 sm:grid-cols-3 lg:gap-x-16;
 }
 
 .die {
-    @apply flex justify-center items-center
+    @apply flex justify-center items-center w-20 h-20 sm:w-24 sm:h-24
 }
 
-.goal_card {
-    @apply shadow-2xl hover:scale-105 transition-transform cursor-pointer
+.objective_card {
+    @apply shadow-2xl transition-transform cursor-pointer relative rounded-2xl overflow-clip
+}
+
+.objective_card:hover>div, .objective_card:active>div {
+    @apply scale-100
 }
 
 .light_blue {
@@ -140,4 +176,8 @@ body{
 
 .dark_red {
     @apply text-orange-800
+}
+
+.modal {
+    @apply fixed z-10 rounded-xl backdrop:bg-gray-800/20 p-8 shadow-lg transition-transform duration-300 ease-in-out
 }

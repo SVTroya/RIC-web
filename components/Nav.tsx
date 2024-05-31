@@ -23,13 +23,13 @@ function Nav() {
   return (
     <nav className='w-full h-20 py-5 flex justify-between'>
       <Link href='/'
-            className='flex items-center gap-2 text-gray-900 font-semibold text-xl transition ease-in-out duration-300 hover:text-orange-500'>
+            className='flex items-center gap-2 text-gray-900 font-semibold text-lg transition ease-in-out duration-300 hover:text-orange-500 sm:text-xl'>
         <Image
           src='/assets/icons/logo.svg'
           alt='logo'
-          width={30}
-          height={30}
-          className='object-contain'/>
+          width={40}
+          height={40}
+          className='w-8 h-8 object-contain sm:w-10 sm:h-10'/>
         Home
       </Link>
       <div className='flex gap-4'>
@@ -39,7 +39,7 @@ function Nav() {
             <button
               type='button'
               onClick={() => {signOut()}}
-              className='text-gray-900 text-xl transition ease-in-out duration-300 hover:text-orange-500'>
+              className='text-gray-900 text-lg transition ease-in-out duration-300 hover:text-orange-500 sm:text-xl'>
               Sign Out
             </button>
 
@@ -49,9 +49,9 @@ function Nav() {
               <Image
                 src={session?.user.image as string}
                 alt='Profile'
-                width={37}
-                height={37}
-                className='rounded-full'
+                width={40}
+                height={40}
+                className='w-8 h-8 rounded-full sm:w-10 sm:h-10'
               />
             </Link>
           </>
@@ -66,7 +66,7 @@ function Nav() {
                     onClick={() => {
                       signIn(provider.id)
                     }}
-                    className='text-gray-900 font-semibold text-xl transition ease-in-out duration-300 hover:text-orange-500'
+                    className='text-gray-900 font-semibold text-lg transition ease-in-out duration-300 hover:text-orange-500 sm:text-xl'
                   >
                     Sign In
                   </button>

@@ -33,7 +33,7 @@ function Dialog({question, showDialog, onYes, onNo} : Props) {
       <dialog ref={dialogRef}
               className={`bg-white fixed z-10 rounded-xl backdrop:bg-gray-800/20 p-8 shadow-lg scale-0 ${showDialog && "scale-100"} transition-transform duration-300 ease-in-out`}>
         <div>
-          <h2 className='text-lg'>{question}</h2>
+          <h2 className='text-lg text-center'>{question}</h2>
           <div className='flex justify-center gap-6 mt-4'>
             <button onClick={handleYes} className='btn_small w-20'>Yes</button>
             <button onClick={handleNo} className='btn_small w-20'>No</button>

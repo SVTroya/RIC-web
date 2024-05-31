@@ -5,20 +5,30 @@ import ExpansionsList from '@components/ExpansionsList'
 import {useSession} from 'next-auth/react'
 import {useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
+import Rules from '@components/Rules'
+import Modal from '@components/Modal'
+import Dialog from '@components/Dialog'
+import BlueprintSelect from '@components/BlueprintSelect'
 
 function GameSetup() {
   const {data: session} = useSession()
 
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
   const [chosenExpansion, setChosenExpansion] = useState<string>('none')
+  const [toggleDialog, setToggleDialog] = useState<boolean>(false)
+  const [toggleBlueprintSelect, setToggleBlueprintSelect] = useState<boolean>(false)
 
-  const {setExpansion} = useGame()
+  const {setExpansion, setBlueprint} = useGame()
 
   const router = useRouter()
 
   useEffect(() => {
     if (setExpansion) {
       setExpansion('none')
+    }
+
+    if (setBlueprint) {
+      setBlueprint(null)
     }
   }, [])
 
@@ -45,12 +55,27 @@ function GameSetup() {
       setExpansion(chosenExpansion)
     }
 
+    setToggleDialog(true)
+
+  }
+
+  function handleBlueprintAccepted() {
+    setToggleDialog(false)
+    setToggleBlueprintSelect(true)
+  }
+
+  function handleBlueprintRejected() {
+    setToggleDialog(false)
+    startGame()
+  }
+
+  function startGame() {
     router.push('/game')
   }
 
   return (
-    <section className='flex gap-10 flex-col items-center'>
-      <h1 className=' max-w-176 head_text text-center'>
+    <section className='flex gap-4 flex-col items-center sm:gap-10'>
+      <h1 className=' max-w-176 head_text'>
         Select an expansion
       </h1>
       <ExpansionsList expansions={expansions} setChosenExpansion={setChosenExpansion}/>
@@ -69,6 +94,15 @@ function GameSetup() {
           </button>
           {' '}to customise your expansion list</p>
       )}
+      <Dialog
+        question='Do you want to play with a blueprint?'
+        showDialog={toggleDialog}
+        onYes={() => handleBlueprintAccepted()}
+        onNo={() => handleBlueprintRejected()}/>
+      <Modal showModal={toggleBlueprintSelect} onClose={() => setToggleBlueprintSelect(false)}>
+        <BlueprintSelect/>
+      </Modal>
+
     </section>
   )
 }

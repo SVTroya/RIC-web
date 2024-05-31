@@ -4,12 +4,13 @@ import React, {useEffect, useRef, useState} from 'react'
 type Props = {
   showModal: boolean,
   onClose(): void,
-  children: React.ReactNode
+  children: React.ReactNode,
+  backgroundColor?: string | null
 }
 
-function Modal({showModal, onClose, children}: Props) {
+function Modal({showModal, onClose, children, backgroundColor = null}: Props) {
   const dialogRef = useRef<HTMLDialogElement | null>(null)
-  const [actuallyShown, setActuallyShown] = useState<boolean>(true)
+  const [actuallyShown, setActuallyShown] = useState<boolean>(false)
   const [scale, setScale] = useState<number>(0)
 
   useEffect(() => {
@@ -18,7 +19,7 @@ function Modal({showModal, onClose, children}: Props) {
       setActuallyShown(true)
       setScale(100)
     }
-    else {
+    else if (actuallyShown) {
       setScale(0)
 
       setTimeout(() => {
@@ -55,8 +56,8 @@ function Modal({showModal, onClose, children}: Props) {
               onClick={(e) =>
                 dialogRef.current && !isClickInsideRectangle(e, dialogRef.current) && handleBackdropClose()
               }
-              className={`scroll-m-1 bg-orange-400 fixed z-10 rounded-xl backdrop:bg-gray-800/20 p-8 shadow-lg scale-${scale.toString()} transition-transform duration-300 ease-in-out`}>
-        <div className='w-max h-max relative flex flex-col'>
+              className={`modal ${backgroundColor || 'bg-white'} scale-${scale.toString()}`}>
+        <div className='{h-max relative flex flex-col'>
           <div className='flex flex-col justify-center items-center max-w-[1000px]'>
             {children}
           </div>

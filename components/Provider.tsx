@@ -12,10 +12,12 @@ type Props = {
 type Game =
   {
     expansion: string | null | undefined,
-    setExpansion: Dispatch<SetStateAction<string | undefined>> | null
+    setExpansion: Dispatch<SetStateAction<string | undefined>> | null,
+    blueprint: string | null | undefined,
+    setBlueprint: Dispatch<SetStateAction<string | undefined | null>> | null
   }
 
-const GameContext = createContext<Game>({expansion: 'none', setExpansion: null})
+const GameContext = createContext<Game>({expansion: 'none', setExpansion: null, blueprint: null, setBlueprint: null})
 
 export function useGame() {
   return useContext(GameContext)
@@ -23,9 +25,10 @@ export function useGame() {
 
 function GameProvider({children}: { children: ReactNode }) {
   const [expansion, setExpansion] = useState<string>()
+  const [blueprint, setBlueprint] = useState<string | null>()
 
   return (
-    <GameContext.Provider value={{expansion, setExpansion}}>
+    <GameContext.Provider value={{expansion, setExpansion, blueprint, setBlueprint}}>
       {children}
     </GameContext.Provider>
   )
