@@ -36,3 +36,8 @@ type Blueprint = {
   name: string,
   image: string
 }
+
+type Round = {
+  roundNumber: number,
+  displayedDice: Array<Face>
+}

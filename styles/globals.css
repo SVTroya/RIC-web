@@ -114,7 +114,7 @@ body{
 }
 
 .blueprint_card {
-    @apply hover:scale-105 transition-transform duration-200 ease-in-out flex-col items-center gap-2 hidden
+    @apply hover:scale-105 transition-transform duration-200 ease-in-out flex-col items-center gap-2 flex
 }
 
 .blueprint_card:hover>div {

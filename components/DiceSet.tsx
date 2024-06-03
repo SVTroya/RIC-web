@@ -8,7 +8,7 @@ type Props = {
 function DiceSet({diceFaces} : Props) {
   return (
     <ul className='dice'>
-      {diceFaces.map(dieFace => {
+      {diceFaces?.map(dieFace => {
         const rotate = dieFace.rotatable ? (Math.round(Math.random() * 3) * 90) : 0
         return  (
             <li key={crypto.randomUUID()} className='die'>

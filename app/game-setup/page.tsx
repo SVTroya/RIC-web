@@ -5,7 +5,6 @@ import ExpansionsList from '@components/ExpansionsList'
 import {useSession} from 'next-auth/react'
 import {useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
-import Rules from '@components/Rules'
 import Modal from '@components/Modal'
 import Dialog from '@components/Dialog'
 import BlueprintSelect from '@components/BlueprintSelect'
@@ -25,11 +24,16 @@ function GameSetup() {
   useEffect(() => {
     if (setExpansion) {
       setExpansion('none')
+      localStorage.removeItem('expansion')
     }
 
     if (setBlueprint) {
       setBlueprint(null)
+      localStorage.removeItem('blueprint')
     }
+
+    localStorage.removeItem('objectives')
+    localStorage.removeItem('lastRound')
   }, [])
 
   async function fetchAllExpansions() {
@@ -55,8 +59,9 @@ function GameSetup() {
       setExpansion(chosenExpansion)
     }
 
-    setToggleDialog(true)
+    localStorage.setItem('expansion', chosenExpansion)
 
+    setToggleDialog(true)
   }
 
   function handleBlueprintAccepted() {

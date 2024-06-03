@@ -35,8 +35,9 @@ function BlueprintSelect() {
     if (setBlueprint) {
       const gameBlueprint = (selectedBlueprint !== 'Random')
         ? blueprints.find(blueprint => blueprint.name === selectedBlueprint)?.image
-        : blueprints[Math.floor(Math.random() * blueprints.length - 1)].image
+        : blueprints[Math.floor(Math.random() * (blueprints.length - 1))].image
       setBlueprint(gameBlueprint)
+      if (gameBlueprint) localStorage.setItem('blueprint', gameBlueprint)
     }
 
     router.push('/game')
