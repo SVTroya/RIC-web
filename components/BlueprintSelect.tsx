@@ -6,13 +6,14 @@ import Image from 'next/image'
 import {useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
 
-function BlueprintSelect() {
+type Props = {
+  handleBlueprintConfirm: (gameBlueprint: string) => void,
+
+}
+
+function BlueprintSelect({handleBlueprintConfirm}: Props) {
   const [blueprints, setBlueprints] = useState<Array<Blueprint>>([])
   const [selectedBlueprint, setSelectedBlueprint] = useState<string>('Random')
-
-  const {setBlueprint} = useGame()
-
-  const router = useRouter()
 
   useEffect(() => {
     fetchBlueprints().catch(error => console.error(error))
@@ -32,15 +33,11 @@ function BlueprintSelect() {
   }
 
   function handleSelect() {
-    if (setBlueprint) {
-      const gameBlueprint = (selectedBlueprint !== 'Random')
-        ? blueprints.find(blueprint => blueprint.name === selectedBlueprint)?.image
-        : blueprints[Math.floor(Math.random() * (blueprints.length - 1))].image
-      setBlueprint(gameBlueprint)
-      if (gameBlueprint) localStorage.setItem('blueprint', gameBlueprint)
-    }
+    const gameBlueprint = (selectedBlueprint !== 'Random')
+      ? blueprints.find(blueprint => blueprint.name === selectedBlueprint)?.image
+      : blueprints[Math.floor(Math.random() * (blueprints.length - 1))].image
 
-    router.push('/game')
+    handleBlueprintConfirm(gameBlueprint as string)
   }
 
   return (

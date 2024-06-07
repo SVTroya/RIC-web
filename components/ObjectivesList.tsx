@@ -2,7 +2,7 @@ import React, {useRef} from 'react'
 import Image from 'next/image'
 
 type Props = {
-  objectives: Array<Objective>
+  objectives: Objective[]
 }
 
 function ObjectivesList({objectives}: Props) {
@@ -13,7 +13,7 @@ function ObjectivesList({objectives}: Props) {
 
   return (
     <ul className='flex gap-8 mb-2 flex-col items-center sm:flex-row sm:flex-wrap sm:w-[500px] md:w-[576px] lg:w-max'>
-      {objectives.map((objective, index) => (
+      {objectives?.map((objective, index) => (
           <li key={objective?._id}
               className='objective_card'
               onClick={(e) => handleObjectiveClick(e.currentTarget as HTMLLIElement)}

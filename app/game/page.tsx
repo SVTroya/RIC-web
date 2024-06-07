@@ -9,50 +9,45 @@ import Modal from '@components/Modal'
 import Rules from '@components/Rules'
 import Blueprint from '@components/Blueprint'
 import Image from 'next/image'
+import {useSession} from 'next-auth/react'
+import {checkUnfinishedGame} from '@app/game-setup/page'
+import {fail} from 'assert'
 
 function Game() {
   const router = useRouter()
-  const {expansion, setExpansion, blueprint, setBlueprint} = useGame()
+  const {data: session} = useSession()
+  const {expansion, setExpansion, blueprint, setBlueprint, gameId, setGameId, objectives, setObjectives} = useGame()
 
   const [dice, setDice] = useState<Array<Die>>([])
   const [round, setRound] = useState<Round>({roundNumber: 0, displayedDice: []})
-  const [objectives, setObjectives] = useState<Array<Objective>>([])
   const [toggleRules, setToggleRules] = useState<boolean>(false)
   const [toggleBlueprint, setToggleBlueprint] = useState<boolean>(false)
+  /*const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)*/
+
+  /*useEffect(() => {
+    if (session && isLoggedIn === false) {
+      setIsLoggedIn(true)
+      checkUnfinishedGame(session).catch(error => {
+        console.error(error)
+      })
+    } else if (session === null && isLoggedIn !== false) {
+      setIsLoggedIn(false)
+    }
+  }, [session, isLoggedIn])*/
 
   useEffect(() => {
     if (!expansion) {
-      const savedExpansion = localStorage.getItem('expansion')
-      if (savedExpansion && setExpansion) {
-        setExpansion(savedExpansion)
-      }
-      else{
-        router.push('/')
-      }
+      restoreFromLocalStorage()
     }
-
-    if (!blueprint) {
-      const savedBlueprint = localStorage.getItem('blueprint')
-      if (savedBlueprint && setBlueprint) {
-        setBlueprint(savedBlueprint)
-      }
-    }
-
-    const savedObjectives = localStorage.getItem('objectives')
-    if (savedObjectives) {
-      setObjectives(JSON.parse(savedObjectives))
-    }
-
   }, [])
 
   useEffect(() => {
     if (expansion) {
-      fetchDice(expansion).catch(error => console.error(error))
-      if (objectives.length === 0) {
-        fetchObjectives(expansion)
-          .then((res) => setGameObjectives(res as Array<Objective>))
-          .catch((error => console.error(error)))
-      }
+      fetchDice(expansion)
+        .then((diceSet) => {
+          if (diceSet) setDice(diceSet)
+        })
+        .catch(error => console.error(error))
 
       const savedRound = localStorage.getItem('lastRound')
       if (savedRound) {
@@ -69,54 +64,53 @@ function Game() {
   }, [blueprint])
 
   useEffect(() => {
-    if (dice.length && round.roundNumber === 0) rollDice()
+    if (dice.length && round.roundNumber === 0) {
+      rollDice()
+    }
   }, [dice])
 
   useEffect(() => {
-    if (round.roundNumber !== 0) localStorage.setItem('lastRound', JSON.stringify(round))
+    if (round.roundNumber !== 0) {
+      localStorage.setItem('lastRound', JSON.stringify(round))
+      if (gameId) {
+        fetch(`/api/games/${gameId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            lastRound: round
+          })
+        }).catch((error) => console.error(error))
+      }
+    }
   }, [round])
+
+  function restoreFromLocalStorage() {
+    const savedExpansion = localStorage.getItem('expansion')
+    if (savedExpansion && setExpansion) {
+      setExpansion(savedExpansion)
+    } else {
+      router.push('/')
+    }
+
+    if (!blueprint) {
+      const savedBlueprint = localStorage.getItem('blueprint')
+      if (savedBlueprint && setBlueprint) {
+        setBlueprint(savedBlueprint)
+      }
+    }
+
+    const savedObjectives = localStorage.getItem('objectives')
+    if (savedObjectives && setObjectives) {
+      setObjectives(JSON.parse(savedObjectives))
+    }
+  }
 
   async function fetchDice(expansion: string) {
     const res = await fetch(`api/dice`.concat(expansion !== 'none' ? `?exp=${expansion}` : ''))
 
-    const data = await res.json()
-    const diceSet = [...data].sort((a, b) => a.die_type.localeCompare(b.die_type))
-
-    setDice(diceSet)
-  }
-
-  async function fetchObjectives(expansion: string) {
-    const res = await fetch(`api/objectives${expansion !== 'none' ? `?exp=${expansion}` : ''}`)
-
-    return await res.json()
-  }
-
-  function setGameObjectives(objectivesList: Array<Objective>) {
-    const baseObjectives = objectivesList.filter(objective => objective.exp === 'base')
-    const expansionObjectives = expansion ? objectivesList.filter(objective => objective.exp === expansion) : []
-
-    const objectivesSet: Array<Objective> = [...getRandomObjectives(baseObjectives, expansion !== 'none' ? 2 : 3)]
-
-    if (expansion !== 'none') {
-      objectivesSet.push(expansionObjectives[Math.floor(Math.random() * expansionObjectives.length)])
+    if (res.status === 200) {
+      const data = await res.json()
+      return [...data].sort((a, b) => a.die_type.localeCompare(b.die_type))
     }
-    setObjectives(objectivesSet)
-    localStorage.setItem('objectives', JSON.stringify(objectivesSet))
-  }
-
-  function getRandomObjectives(objectivesArray: Array<Objective>, number: number) {
-    const count = objectivesArray.length
-    const randomObjectives: Array<Objective> = []
-
-    for (let i: number = 0; i < number;) {
-      const objective = objectivesArray[Math.floor(Math.random() * count)]
-      if (!randomObjectives.includes(objective)) {
-        randomObjectives.push(objective)
-        i++
-      }
-    }
-
-    return randomObjectives
   }
 
   function rollDice() {
@@ -131,6 +125,10 @@ function Game() {
   }
 
   function handleFinish() {
+    if (gameId) {
+      fetch(`/api/games/${gameId}`, {method: 'DELETE'}).catch((error) => console.error(error))
+    }
+
     if (setExpansion) {
       setExpansion('none')
       localStorage.removeItem('expansion')
@@ -141,7 +139,13 @@ function Game() {
       localStorage.removeItem('blueprint')
     }
 
-    localStorage.removeItem('objectives')
+    if (setObjectives) {
+      setObjectives([])
+      localStorage.removeItem('objectives')
+    }
+
+    if (setGameId) setGameId('')
+
     localStorage.removeItem('lastRound')
 
     router.push('/')

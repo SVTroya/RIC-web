@@ -3,7 +3,7 @@ interface SessionUser {
   email: string,
   username: string,
   image: string,
-  expList: Array<Expansion>
+  expList: Expansion[]
 }
 
 type Expansion = {
@@ -15,7 +15,7 @@ type Expansion = {
 type Die = {
   _id: string,
   die_type: string,
-  faces: Array<string>,
+  faces: string[],
   rotatable: boolean
 }
 
@@ -39,5 +39,13 @@ type Blueprint = {
 
 type Round = {
   roundNumber: number,
-  displayedDice: Array<Face>
+  displayedDice: Face[]
+}
+
+type Game = {
+  _id?: string
+  expansion: string,
+  blueprint?: string | null,
+  objectives: Objective[],
+  lastRound?: Round
 }
