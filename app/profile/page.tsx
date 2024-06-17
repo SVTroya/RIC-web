@@ -2,8 +2,11 @@
 
 import React, {useEffect, useState} from 'react'
 import {useSession} from 'next-auth/react'
+import {useRouter} from 'next/navigation'
 
 function Profile() {
+  const router = useRouter()
+
   const {data: session, update} = useSession()
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
   const [wasChanged, setWasChanged] = useState(false)
@@ -25,7 +28,10 @@ function Profile() {
   }, [])
 
   useEffect(() => {
-    if (session?.user.expList) {
+    if (session === null) {
+      router.push('/')
+    }
+    else if (session?.user.expList) {
       setCheckedExpansions(session?.user.expList.map(expansion => expansion._id))
     }
   }, [session])
