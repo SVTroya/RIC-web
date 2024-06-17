@@ -162,7 +162,7 @@ body{
 }
 
 .dice {
-    @apply mx-auto grid grid-cols-2 gap-10 sm:h-60 sm:grid-cols-3 lg:gap-x-16;
+    @apply mx-auto grid gap-10 sm:h-60 lg:gap-x-16;
 }
 
 .die {

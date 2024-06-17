@@ -7,7 +7,7 @@ type Props = {
 
 function DiceSet({diceFaces} : Props) {
   return (
-    <ul className='dice'>
+    <ul className={`dice grid-cols-2 ${diceFaces.length > 4 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
       {diceFaces?.map(dieFace => {
         const rotate = dieFace.rotatable ? (Math.round(Math.random() * 3) * 90) : 0
         return  (

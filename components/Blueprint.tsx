@@ -10,12 +10,13 @@ function Blueprint({blueprintImage, onClose}: Props) {
   return (
     <div className='flex flex-col gap-8 items-center'>
       <h2 className='blueprint_text_header'>Please setup your board with this blueprint</h2>
-      <div className='h-[576px] w-[406px] rounded-md overflow-clip shadow-xl'>
+      <div className='rounded-md overflow-clip shadow-xl'>
         <Image
           src={'/assets/images/blueprints/' + blueprintImage}
-          width={406}
-          height={576}
-          alt='Blueprint image'>
+          width={709}
+          height={1007}
+          alt='Blueprint image'
+          className='w-[406px] h-full'>
         </Image>
       </div>
       <button

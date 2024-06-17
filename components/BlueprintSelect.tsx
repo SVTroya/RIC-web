@@ -53,9 +53,10 @@ function BlueprintSelect({handleBlueprintConfirm}: Props) {
               <div className='blueprint_image'>
                 <Image
                   src={'/assets/images/blueprints/' + blueprint.image}
-                  width={203}
-                  height={288}
-                  alt={blueprint.name}>
+                  width={709}
+                  height={1007}
+                  alt={blueprint.name}
+                  className='w-[203px] h-full'>
                 </Image>
               </div>
               <h3 className='blueprint_name'>{blueprint.name}</h3>
