@@ -129,7 +129,7 @@ body{
 }
 
 .blueprint_card {
-    @apply hover:scale-105 transition-transform duration-200 ease-in-out flex-col items-center gap-2 flex
+    @apply hover:scale-105 transition-transform duration-200 ease-in-out flex-col items-center gap-2 flex ml-3 mr-3
 }
 
 .blueprint_card:hover>div {
@@ -223,3 +223,4 @@ body{
 
     @apply fixed z-10 rounded-xl backdrop:bg-gray-800/20 p-4 md:p-8 shadow-lg transition-transform duration-300 ease-in-out
 }
+

@@ -3,20 +3,13 @@
 import React, {useEffect, useState} from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import {useSession, getProviders, LiteralUnion, ClientSafeProvider, signIn, signOut} from 'next-auth/react'
+import {useSession, getProviders, LiteralUnion, ClientSafeProvider, signIn} from 'next-auth/react'
 import {BuiltInProviderType} from 'next-auth/providers/index'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import {ListItemIcon, ListItemText} from '@mui/material'
-import SettingsIcon from '@mui/icons-material/Settings'
-import LogoutIcon from '@mui/icons-material/Logout'
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import {orange} from '@node_modules/@mui/material/colors'
-import {useRouter} from 'next/navigation'
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
+import UserMenu from '@components/UserMenu'
 
 function Nav() {
   const {data: session} = useSession()
-  const router = useRouter()
 
   const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType>, ClientSafeProvider> | null>(null)
 
@@ -25,16 +18,6 @@ function Nav() {
 
   function handleMenuClick(event: React.MouseEvent<HTMLElement>) {
     setMenuEl(event.currentTarget)
-  }
-
-  function handleSettingsClick() {
-    setMenuEl(null)
-    router.push('/profile')
-  }
-
-  async function handleSignOutClick() {
-    setMenuEl(null)
-    signOut().catch((error) => console.error(error))
   }
 
   useEffect(() => {
@@ -84,35 +67,10 @@ function Nav() {
                 />
                 <MenuRoundedIcon/>
               </button>
-              <Menu
-                aria-labelledby='Menu button'
-                anchorEl={menuEl}
-                open={open}
-                onClose={() => setMenuEl(null)}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left'
-                }}
-              >
-                <MenuItem
-                  onClick={handleSettingsClick}
-                >
-                  <ListItemIcon>
-                    <SettingsIcon fontSize='small' sx={{color: orange[800]}}/>
-                  </ListItemIcon>
-                  <ListItemText className='text-gray-900'>Settings</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={handleSignOutClick}>
-                  <ListItemIcon>
-                    <LogoutIcon fontSize='small' sx={{color: orange[800]}}/>
-                  </ListItemIcon>
-                  <ListItemText className='text-gray-900'>Sign Out</ListItemText>
-                </MenuItem>
-              </Menu>
+              <UserMenu
+                anchorEl={menuEl as HTMLElement}
+                isOpen={open}
+                onClose={() => setMenuEl(null)}/>
             </>
           )
           : (
