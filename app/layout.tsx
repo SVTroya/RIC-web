@@ -1,9 +1,8 @@
-import React from 'react'
+import React, {Suspense} from 'react'
 import type {Metadata} from 'next'
 import '@styles/globals.css'
 import Nav from '@components/Nav'
 import Provider from '@components/Provider'
-
 
 export const metadata: Metadata = {
   title: 'RIC dice roller',
