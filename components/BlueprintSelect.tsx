@@ -34,7 +34,7 @@ function BlueprintSelect({handleBlueprintConfirm}: Props) {
   function handleSelect() {
     const gameBlueprint = (selectedBlueprint !== 'Random')
       ? blueprints.find(blueprint => blueprint.name === selectedBlueprint)?.image
-      : blueprints[Math.floor(Math.random() * (blueprints.length - 1))].image
+      : blueprints[Math.floor(Math.random() * (blueprints.length - 1)) + 1].image
 
     handleBlueprintConfirm(gameBlueprint as string)
   }
