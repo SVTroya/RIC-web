@@ -2,6 +2,19 @@ import {NextRequest} from 'next/server'
 import {connectToDB} from '@utils/database'
 import Game from '@models/game'
 
+export async function GET(_req: NextRequest, {params}: { params: { id: string } }) {
+  try {
+    await connectToDB()
+
+    const res = await Game.findById(params.id)
+
+    return new Response(JSON.stringify(res), {status: 200})
+  } catch (error) {
+    console.error(error)
+    return new Response('Failed to fetch game by game id!', {status: 500})
+  }
+}
+
 export async function PATCH(req: NextRequest, {params}: { params: { id: string } }) {
   try {
     const {lastRound} = await req.json()

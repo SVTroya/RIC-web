@@ -6,17 +6,26 @@ import {useSession} from 'next-auth/react'
 import {useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
 import Modal from '@components/Modal'
-import Dialog from '@components/Dialog'
 import BlueprintSelect from '@components/BlueprintSelect'
 import {Session} from 'next-auth'
+import Dialog from '@components/Dialog'
+
+export async function saveGameToDB(game: Game, userId: string) {
+  const res = await fetch(`/api/games/user/${userId}`, {
+    method: 'POST',
+    body: JSON.stringify({game})
+  })
+
+  return await res.json()
+}
 
 function GameSetup() {
   const {data: session} = useSession()
 
   const [expansions, setExpansions] = useState<Array<Expansion>>([])
   const [chosenExpansion, setChosenExpansion] = useState<string>('none')
-  const [toggleDialog, setToggleDialog] = useState<boolean>(false)
   const [toggleBlueprintSelect, setToggleBlueprintSelect] = useState<boolean>(false)
+  const [dialogInfo, setDialogInfo] = useState<DialogInfo | null>(null)
 
   const {expansion, setExpansion, blueprint, setBlueprint, objectives, setObjectives, setGameId} = useGame()
 
@@ -71,17 +80,22 @@ function GameSetup() {
       .then((res) => setGameObjectives(res as Array<Objective>))
       .catch((error => console.error(error)))
 
-    setToggleDialog(true)
+    setDialogInfo({
+      showDialog: true,
+      question: 'Do you want to play with a blueprint?',
+      onYes: handleBlueprintAccepted,
+      onNo: handleBlueprintRejected
+    })
   }
 
   function handleBlueprintAccepted() {
-    setToggleDialog(false)
+    setDialogInfo(null)
     setToggleBlueprintSelect(true)
   }
 
   function handleBlueprintRejected() {
-    setToggleDialog(false)
-    startGame()
+    setDialogInfo(null)
+    startGame().catch((error => console.error(error)))
   }
 
   async function fetchObjectives() {
@@ -117,25 +131,13 @@ function GameSetup() {
     return randomObjectives
   }
 
-  async function saveInitialGame(game: Game) {
-    const res = await fetch(`/api/games/user/${session?.user?.id}`, {
-      method: 'POST',
-      body: JSON.stringify({game})
-    })
-
-    if (res.status === 201) {
-      const id = await res.json()
-      if (setGameId) setGameId(id)
-    }
-  }
-
   function handleBlueprintConfirm(gameBlueprint: string) {
     if (setBlueprint) setBlueprint(gameBlueprint)
 
-    startGame()
+    startGame().catch((error) => console.error(error))
   }
 
-  function startGame() {
+  async function startGame() {
     localStorage.setItem('expansion', expansion)
     localStorage.setItem('objectives', JSON.stringify(objectives))
     if (blueprint) localStorage.setItem('blueprint', blueprint)
@@ -147,32 +149,38 @@ function GameSetup() {
     }
 
     if (session?.user?.id) {
-      saveInitialGame(game).catch((error) => console.error(error))
+      const gameId = await saveGameToDB(game, session?.user?.id)
+      if (setGameId) setGameId(gameId)
     }
 
     router.push('/game')
   }
 
-  async function checkUnfinishedGame(session : Session) {
-    const game = await fetchGame(session)
-    restoreGame(game)
+  async function checkUnfinishedGame(session: Session) {
+    const game = await fetchGameByUserId(session?.user?.id)
+    setDialogInfo({
+      showDialog: true,
+      question: 'You have unfinished game. Do you want to continue it?',
+      onYes: () => handleRestoreAccepted(game),
+      onNo: () => setDialogInfo(null)
+    })
   }
 
-  async function fetchGame(session : Session) {
-    const res = await fetch(`/api/games/user/${session?.user?.id}`)
+  async function fetchGameByUserId(userId: string) {
+    const res = await fetch(`/api/games/user/${userId}`)
     return await res.json()
   }
 
-  function restoreGame(game: Game) {
-    //TODO: add dialog to restore old game
-
-
+  function handleRestoreAccepted(game: Game) {
+    setDialogInfo(null)
     if (game && setExpansion && setBlueprint && setObjectives && setGameId) {
       setExpansion(game.expansion)
       setBlueprint(game.blueprint)
       setObjectives(game.objectives)
       setGameId(game._id)
     }
+
+    router.push('/game')
   }
 
   return (
@@ -197,10 +205,10 @@ function GameSetup() {
           {' '}to customise your expansion list</p>
       )}
       <Dialog
-        question='Do you want to play with a blueprint?'
-        showDialog={toggleDialog}
-        onYes={() => handleBlueprintAccepted()}
-        onNo={() => handleBlueprintRejected()}/>
+        question={dialogInfo?.question as string}
+        showDialog={dialogInfo?.showDialog as boolean}
+        onYes={dialogInfo?.onYes as () => void}
+        onNo={dialogInfo?.onNo as () => void}/>
       <Modal showModal={toggleBlueprintSelect} onClose={() => setToggleBlueprintSelect(false)}>
         <BlueprintSelect handleBlueprintConfirm={handleBlueprintConfirm}/>
       </Modal>

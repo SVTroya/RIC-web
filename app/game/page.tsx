@@ -10,8 +10,7 @@ import Rules from '@components/Rules'
 import Blueprint from '@components/Blueprint'
 import Image from 'next/image'
 import {useSession} from 'next-auth/react'
-import {checkUnfinishedGame} from '@app/game-setup/page'
-import {fail} from 'assert'
+import {saveGameToDB} from '@app/game-setup/page'
 
 function Game() {
   const router = useRouter()
@@ -22,20 +21,11 @@ function Game() {
   const [round, setRound] = useState<Round>({roundNumber: 0, displayedDice: []})
   const [toggleRules, setToggleRules] = useState<boolean>(false)
   const [toggleBlueprint, setToggleBlueprint] = useState<boolean>(false)
-  /*const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)*/
-
-  /*useEffect(() => {
-    if (session && isLoggedIn === false) {
-      setIsLoggedIn(true)
-      checkUnfinishedGame(session).catch(error => {
-        console.error(error)
-      })
-    } else if (session === null && isLoggedIn !== false) {
-      setIsLoggedIn(false)
-    }
-  }, [session, isLoggedIn])*/
 
   useEffect(() => {
+    if (gameId) {
+      restoreFromDB(gameId).catch((error) => console.error(error))
+    }
     if (!expansion) {
       restoreFromLocalStorage()
     }
@@ -50,7 +40,7 @@ function Game() {
         .catch(error => console.error(error))
 
       const savedRound = localStorage.getItem('lastRound')
-      if (savedRound) {
+      if (savedRound && !gameId) {
         setRound(JSON.parse(savedRound))
       }
     }
@@ -83,6 +73,22 @@ function Game() {
     }
   }, [round])
 
+  useEffect(() => {
+    if (session?.user?.id && !gameId) {
+      const game: Game = {
+        expansion,
+        blueprint,
+        objectives,
+        lastRound: round
+      }
+        saveGameToDB(game, session?.user?.id)
+          .then((gameId) => {
+            if (setGameId) setGameId(gameId)
+          })
+          .catch((error => console.error(error)))
+    }
+  }, [session])
+
   function restoreFromLocalStorage() {
     const savedExpansion = localStorage.getItem('expansion')
     if (savedExpansion && setExpansion) {
@@ -102,6 +108,16 @@ function Game() {
     if (savedObjectives && setObjectives) {
       setObjectives(JSON.parse(savedObjectives))
     }
+  }
+
+  async function restoreFromDB(gameId: string) {
+    const game = await fetchGameById(gameId)
+    if (setRound) setRound(game.lastRound as Round)
+  }
+
+  async function fetchGameById(gameId: string) {
+    const res = await fetch(`/api/games/${gameId}`)
+    return await res.json() as Game
   }
 
   async function fetchDice(expansion: string) {
@@ -179,7 +195,7 @@ function Game() {
 
       <ObjectivesList objectives={objectives}/>
       <button
-        className='absolute top-5 right-0 text-gray-900 hover:text-orange-500 outline-0'
+        className='absolute top-1 sm:top-5 right-0 text-gray-900 hover:text-orange-500 outline-0'
         aria-label='Rules'
         onClick={() => setToggleRules(true)}>
         <svg
@@ -193,7 +209,7 @@ function Game() {
       {
         blueprint && (
           <div
-            className={`cursor-pointer rounded-l-lg overflow-clip flex absolute -right-[147px] top-24 transition-transform ease-in-out duration-1000 md:-right-[203px]`}
+            className={`cursor-pointer rounded-l-lg overflow-clip flex absolute -right-[147px] top-16 sm:top-24 transition-transform ease-in-out duration-1000 md:-right-[203px]`}
             onClick={(e) => handleBlueprintSidebar(e.currentTarget as HTMLDivElement)}>
             <p
               className='bg-orange-500 text-white text-center p-2 text-lg leading-[1.15] md:leading-[1.2] md:text-2xl md:p-4'>B<br/>l<br/>u<br/>e<br/>p<br/>r<br/>i<br/>n<br/>t

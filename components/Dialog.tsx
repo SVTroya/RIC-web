@@ -3,8 +3,8 @@ import React, {useEffect, useRef} from 'react'
 type Props = {
   question: string,
   showDialog: boolean,
-  onYes(): void,
-  onNo(): void
+  onYes: () => void,
+  onNo: () => void
 }
 
 function Dialog({question, showDialog, onYes, onNo} : Props) {

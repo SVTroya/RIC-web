@@ -49,3 +49,10 @@ type Game = {
   objectives: Objective[],
   lastRound?: Round
 }
+
+type DialogInfo = {
+  showDialog: boolean,
+  question: string,
+  onYes: () => void,
+  onNo: () => void
+}
