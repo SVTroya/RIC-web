@@ -10,30 +10,6 @@ import Dialog from '@components/Dialog'
 import BlueprintSelect from '@components/BlueprintSelect'
 import {Session} from 'next-auth'
 
-export async function checkUnfinishedGame(session : Session) {
-  const game = await fetchGame(session)
-  restoreGame(game)
-}
-
-async function fetchGame(session : Session) {
-  const res = await fetch(`/api/games/user/${session?.user?.id}`)
-  return await res.json()
-}
-
-function restoreGame(game: Game) {
-  const {setExpansion, setBlueprint, setObjectives, setGameId} = useGame()
-
-  //TODO: add dialog to restore old game
-
-
-  if (game && setExpansion && setBlueprint && setObjectives && setGameId) {
-    setExpansion(game.expansion)
-    setBlueprint(game.blueprint)
-    setObjectives(game.objectives)
-    setGameId(game._id)
-  }
-}
-
 function GameSetup() {
   const {data: session} = useSession()
 
@@ -109,18 +85,18 @@ function GameSetup() {
   }
 
   async function fetchObjectives() {
-    const res = await fetch(`api/objectives${expansion !== 'none' ? `?exp=${expansion}` : ''}`)
+    const res = await fetch(`api/objectives${chosenExpansion !== 'none' ? `?exp=${chosenExpansion}` : ''}`)
 
     return await res.json()
   }
 
   function setGameObjectives(objectivesList: Array<Objective>) {
     const baseObjectives = objectivesList.filter(objective => objective.exp === 'base')
-    const expansionObjectives = expansion ? objectivesList.filter(objective => objective.exp === expansion) : []
+    const expansionObjectives = chosenExpansion !== 'none' ? objectivesList.filter(objective => objective.exp === chosenExpansion) : []
 
-    const objectivesSet: Array<Objective> = [...getRandomObjectives(baseObjectives, expansion !== 'none' ? 2 : 3)]
+    const objectivesSet: Array<Objective> = [...getRandomObjectives(baseObjectives, chosenExpansion !== 'none' ? 2 : 3)]
 
-    if (expansion !== 'none') {
+    if (chosenExpansion !== 'none') {
       objectivesSet.push(expansionObjectives[Math.floor(Math.random() * expansionObjectives.length)])
     }
     if (setObjectives) setObjectives(objectivesSet)
@@ -175,6 +151,28 @@ function GameSetup() {
     }
 
     router.push('/game')
+  }
+
+  async function checkUnfinishedGame(session : Session) {
+    const game = await fetchGame(session)
+    restoreGame(game)
+  }
+
+  async function fetchGame(session : Session) {
+    const res = await fetch(`/api/games/user/${session?.user?.id}`)
+    return await res.json()
+  }
+
+  function restoreGame(game: Game) {
+    //TODO: add dialog to restore old game
+
+
+    if (game && setExpansion && setBlueprint && setObjectives && setGameId) {
+      setExpansion(game.expansion)
+      setBlueprint(game.blueprint)
+      setObjectives(game.objectives)
+      setGameId(game._id)
+    }
   }
 
   return (
