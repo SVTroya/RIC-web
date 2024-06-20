@@ -25,7 +25,7 @@ function ExpansionsList({expansions, setChosenExpansion}: Props) {
             handleExpansionChange(e)
           }}
         />
-        <label htmlFor='no'>None</label>
+        <label htmlFor='none'>None</label>
       </div>
       {expansions.map(expansion => (
         <div key={expansion._id} className='flex gap-2 m-1'>
