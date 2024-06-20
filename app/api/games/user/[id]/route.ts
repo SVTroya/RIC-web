@@ -6,7 +6,7 @@ export async function GET(_req: NextRequest, {params}: { params: { id: string } 
   try {
     await connectToDB()
 
-    const res = await Game.find({user: params.id})
+    const res = await Game.findOne({user: params.id})
 
     return new Response(JSON.stringify(res), {status: 200})
   } catch (error) {
