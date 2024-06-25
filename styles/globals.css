@@ -125,7 +125,7 @@ body{
 }
 
 .blueprint_image {
-    @apply h-72 w-[203px] rounded-md overflow-clip shadow-xl
+    @apply h-72 w-[203px] rounded-md overflow-clip shadow-xl border-[1px] border-gray-400
 }
 
 .blueprint_card {
@@ -166,7 +166,7 @@ body{
 }
 
 .die {
-    @apply flex justify-center items-center w-20 h-20 sm:w-24 sm:h-24
+    @apply flex justify-center items-center w-20 h-20 sm:w-24 sm:h-24 border-[1px] border-gray-400 rounded-2xl shadow-lg
 }
 
 .objective_card {
