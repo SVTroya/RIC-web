@@ -1,5 +1,6 @@
 'use client'
 import React, {useEffect, useRef, useState} from 'react'
+import DisableBodyScroll from '@components/DisableBodyScroll'
 
 type Props = {
   showModal: boolean,
@@ -50,20 +51,23 @@ function Modal({showModal, onClose, children, backgroundColor = null}: Props) {
 
   const dialog: React.JSX.Element | null = (actuallyShown || showModal)
     ? (
-      <dialog ref={dialogRef}
-              onCancel={(e) => {
-                handleESCClose(e)
-              }}
-              onClick={(e) =>
-                dialogRef.current && !isClickInsideRectangle(e, dialogRef.current) && handleBackdropClose()
-              }
-              className={`modal ${backgroundColor || 'bg-white'} scale-${scale.toString()}`}>
-        <div className='{h-max relative flex flex-col'>
-          <div className='flex flex-col justify-center items-center max-w-[1000px]'>
-            {children}
+      <>
+        <DisableBodyScroll/>
+        <dialog ref={dialogRef}
+                onCancel={(e) => {
+                  handleESCClose(e)
+                }}
+                onClick={(e) =>
+                  dialogRef.current && !isClickInsideRectangle(e, dialogRef.current) && handleBackdropClose()
+                }
+                className={`modal ${backgroundColor || 'bg-white'} scale-${scale.toString()}`}>
+          <div className='{h-max relative flex flex-col'>
+            <div className='flex flex-col justify-center items-center max-w-[1000px]'>
+              {children}
+            </div>
           </div>
-        </div>
-      </dialog>
+        </dialog>
+      </>
     ) : null
 
   return dialog
