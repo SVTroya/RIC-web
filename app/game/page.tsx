@@ -22,6 +22,8 @@ function Game() {
   const [toggleRules, setToggleRules] = useState<boolean>(false)
   const [toggleBlueprint, setToggleBlueprint] = useState<boolean>(false)
 
+  const rollingSound = new Audio('/assets/sound/die_sound.wav')
+
   useEffect(() => {
     if (gameId) {
       restoreFromDB(gameId).catch((error) => console.error(error))
@@ -130,6 +132,7 @@ function Game() {
   }
 
   function rollDice() {
+    rollingSound.play().catch((error) => console.log(error))
     setRound(prevState => {
       return {
         roundNumber: prevState.roundNumber + 1,
@@ -174,7 +177,7 @@ function Game() {
   return (
     <section className='w-full relative mb-8 flex flex-col items-center gap-8 overflow-x-hidden sm:gap-16'>
       <h1 className='head_text'>
-        Round <span className='text-orange-500'>#{(round.roundNumber === 0) ? 1 : round.roundNumber}</span>
+        Round <span className='text-orange-500'>#{(round?.roundNumber === 0) ? 1 : round?.roundNumber}</span>
       </h1>
       <DiceSet diceFaces={round.displayedDice}/>
       {(round.roundNumber < (expansion !== 'none' || blueprint ? 6 : 7))
