@@ -3,16 +3,19 @@
 import React, {useEffect, useState} from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import {useSession, getProviders, LiteralUnion, ClientSafeProvider, signIn} from 'next-auth/react'
-import {BuiltInProviderType} from 'next-auth/providers/index'
+import {useSession, signIn} from 'next-auth/react'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import UserMenu from '@components/UserMenu'
 import Loader from '@app/loader'
+import SignInButton from '@components/SignInButton'
+
+export function userSignIn(id: string) {
+  signIn(id).catch((error) => console.error(error))
+}
 
 function Nav() {
   const {data: session} = useSession()
 
-  const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType>, ClientSafeProvider> | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [menuEl, setMenuEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(menuEl)
@@ -20,15 +23,6 @@ function Nav() {
   function handleMenuClick(event: React.MouseEvent<HTMLElement>) {
     setMenuEl(event.currentTarget)
   }
-
-  useEffect(() => {
-    async function setUpProviders() {
-      const response = await getProviders()
-      setProviders(response)
-    }
-
-    setUpProviders().catch((error) => console.error(error))
-  }, [])
 
   useEffect(() => {
     if (session === undefined) {
@@ -83,21 +77,9 @@ function Nav() {
               </>
             )
             : (
-              <>
-                {providers &&
-                  Object.values(providers).map((provider) => (
-                    <button
-                      key={provider.name}
-                      type='button'
-                      onClick={() => {
-                        signIn(provider.id).catch((error) => console.error(error))
-                      }}
-                      className='text-gray-900 font-semibold text-lg transition ease-in-out duration-300 hover:text-orange-500 sm:text-xl'
-                    >
-                      Sign In
-                    </button>
-                  ))}
-              </>
+              <SignInButton
+                text='Sign In'
+                className='text-gray-900 font-semibold text-lg transition ease-in-out duration-300 hover:text-orange-500 sm:text-xl'/>
             )
           }
         </div>

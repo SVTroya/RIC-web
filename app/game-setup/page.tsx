@@ -9,6 +9,8 @@ import Modal from '@components/Modal'
 import BlueprintSelect from '@components/BlueprintSelect'
 import {Session} from 'next-auth'
 import Dialog from '@components/Dialog'
+import {userSignIn} from '@components/Nav'
+import SignInButton from '@components/SignInButton'
 
 export async function saveGameToDB(game: Game, userId: string) {
   const res = await fetch(`/api/games/user/${userId}`, {
@@ -197,11 +199,9 @@ function GameSetup() {
       </button>
       {!session?.user && (
         <p className='text'>
-          <button
-            type='button'
-            className='text-orange-500 hover:underline'>
-            Sign Up
-          </button>
+          <SignInButton
+            text='Sign Up'
+            className='text-orange-500 hover:underline'/>
           {' '}to customise your expansion list</p>
       )}
       <Dialog
