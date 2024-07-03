@@ -29,10 +29,6 @@ function Nav() {
       setIsLoading(true)
     } else {
       setIsLoading(false)
-
-      if (session) {
-        localStorage.setItem('isLoggedIn', JSON.stringify(true))
-      }
     }
   }, [session])
 

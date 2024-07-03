@@ -3,51 +3,66 @@
 import React, {useEffect, useState} from 'react'
 import DiceSet from '@components/DiceSet'
 import ObjectivesList from '@components/ObjectivesList'
-import {useGame} from '@components/Provider'
+import {initialGame, useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
 import Modal from '@components/Modal'
 import Rules from '@components/Rules'
 import Blueprint from '@components/Blueprint'
 import Image from 'next/image'
 import {useSession} from 'next-auth/react'
+import Storage from '@utils/storage'
 import {saveGameToDB} from '@app/game-setup/page'
 
 function Game() {
   const router = useRouter()
   const {data: session} = useSession()
-  const {expansion, setExpansion, blueprint, setBlueprint, gameId, setGameId, objectives, setObjectives} = useGame()
+  const {currentGame, setCurrentGame} = useGame()
 
   const [dice, setDice] = useState<Array<Die>>([])
   const [round, setRound] = useState<Round>({roundNumber: 0, displayedDice: []})
   const [toggleRules, setToggleRules] = useState<boolean>(false)
   const [toggleBlueprint, setToggleBlueprint] = useState<boolean>(false)
+  const [rollingSound, setRollingSound] = useState<HTMLAudioElement | null>(null)
 
-  const rollingSound = new Audio('/assets/sound/die_sound.wav')
+  const {_id, expansion, blueprint, objectives, lastRound} = currentGame
 
   useEffect(() => {
-    if (gameId) {
-      restoreFromDB(gameId).catch((error) => console.error(error))
+    if (!objectives.length) {
+      if (_id) {
+        restoreFromDB(_id).catch((error) => console.error(error))
+      } else {
+        restoreFromLocalStorage()
+      }
     }
-    if (!expansion) {
-      restoreFromLocalStorage()
-    }
+
+    setRollingSound(new Audio('./assets/sound/die_sound.wav'))
   }, [])
 
   useEffect(() => {
-    if (expansion) {
+    if (expansion && objectives.length) {
       fetchDice(expansion)
         .then((diceSet) => {
           if (diceSet) setDice(diceSet)
         })
         .catch(error => console.error(error))
 
-      const savedRound = localStorage.getItem('lastRound')
-      if (savedRound && !gameId) {
-        setRound(JSON.parse(savedRound))
+      if (lastRound && _id) {
+        setRound(lastRound as Round)
       }
     }
-
   }, [expansion])
+
+  useEffect(() => {
+    if (dice.length && !lastRound) {
+      const initialRound: Round = {
+        roundNumber: 0,
+        displayedDice: dice.map(die => {
+          return {image: null, rotatable: die.rotatable, expansion: die.die_type}
+        })
+      }
+      setRound(initialRound)
+    }
+  }, [dice])
 
   useEffect(() => {
     if (blueprint) {
@@ -56,65 +71,51 @@ function Game() {
   }, [blueprint])
 
   useEffect(() => {
-    if (dice.length && round.roundNumber === 0) {
-      rollDice()
+    if (lastRound && lastRound.roundNumber !== 0) {
+      Storage.save('game', currentGame)
     }
-  }, [dice])
+  }, [lastRound])
 
   useEffect(() => {
     if (round.roundNumber !== 0) {
-      localStorage.setItem('lastRound', JSON.stringify(round))
-      if (gameId) {
-        fetch(`/api/games/${gameId}`, {
+      if (setCurrentGame) setCurrentGame(prevGame => { return {...prevGame, lastRound: round}})
+
+      if (currentGame?._id) {
+        fetch(`/api/games/${currentGame._id}`, {
           method: 'PATCH',
           body: JSON.stringify({
             lastRound: round
           })
-        }).catch((error) => console.error(error))
+        })
+          .catch((error) => {
+            console.error(error)})
       }
     }
   }, [round])
 
   useEffect(() => {
-    if (session?.user?.id && !gameId) {
-      const game: Game = {
-        expansion,
-        blueprint,
-        objectives,
-        lastRound: round
-      }
-        saveGameToDB(game, session?.user?.id)
-          .then((gameId) => {
-            if (setGameId) setGameId(gameId)
-          })
-          .catch((error => console.error(error)))
+    if (session?.user?.id && !currentGame?._id) {
+      saveGameToDB(currentGame, session?.user?.id)
+        .then((gameId) => {
+          if (setCurrentGame) setCurrentGame(prevGame => { return {...prevGame, _id: gameId}})
+        })
+        .catch((error => console.error(error)))
     }
   }, [session])
 
   function restoreFromLocalStorage() {
-    const savedExpansion = localStorage.getItem('expansion')
-    if (savedExpansion && setExpansion) {
-      setExpansion(savedExpansion)
-    } else {
-      router.push('/')
-    }
+    const game: Game = Storage.load('game')
+    if (game) {
+      if (setCurrentGame) setCurrentGame(game)
 
-    if (!blueprint) {
-      const savedBlueprint = localStorage.getItem('blueprint')
-      if (savedBlueprint && setBlueprint) {
-        setBlueprint(savedBlueprint)
-      }
+      if (game.lastRound) setRound(game.lastRound)
     }
-
-    const savedObjectives = localStorage.getItem('objectives')
-    if (savedObjectives && setObjectives) {
-      setObjectives(JSON.parse(savedObjectives))
-    }
+    else router.push('/')
   }
 
   async function restoreFromDB(gameId: string) {
     const game = await fetchGameById(gameId)
-    if (setRound) setRound(game.lastRound as Round)
+    setRound(game.lastRound as Round)
   }
 
   async function fetchGameById(gameId: string) {
@@ -132,40 +133,29 @@ function Game() {
   }
 
   function rollDice() {
-    rollingSound.play().catch((error) => console.log(error))
-    setRound(prevState => {
-      return {
-        roundNumber: prevState.roundNumber + 1,
-        displayedDice: dice.map(die => {
-          return {image: die.faces[Math.floor(Math.random() * die.faces.length)], rotatable: die.rotatable}
-        })
-      }
-    })
+    if (dice.length) {
+      rollingSound?.play().catch((error) => console.error(error))
+      setRound(prevState => {
+        const newRound: Round = {
+          roundNumber: prevState.roundNumber + 1,
+          displayedDice: dice.map(die => {
+            return {image: die.faces[Math.floor(Math.random() * die.faces.length)], rotatable: die.rotatable, expansion: die.die_type}
+          })
+        }
+
+        return newRound
+      })
+    }
   }
 
   function handleFinish() {
-    if (gameId) {
-      fetch(`/api/games/${gameId}`, {method: 'DELETE'}).catch((error) => console.error(error))
+    if (currentGame._id) {
+      fetch(`/api/games/${currentGame._id}`, {method: 'DELETE'}).catch((error) => console.error(error))
     }
 
-    if (setExpansion) {
-      setExpansion('none')
-      localStorage.removeItem('expansion')
-    }
+    if (setCurrentGame) setCurrentGame(initialGame)
 
-    if (setBlueprint) {
-      setBlueprint(null)
-      localStorage.removeItem('blueprint')
-    }
-
-    if (setObjectives) {
-      setObjectives([])
-      localStorage.removeItem('objectives')
-    }
-
-    if (setGameId) setGameId('')
-
-    localStorage.removeItem('lastRound')
+    Storage.remove('game')
 
     router.push('/')
   }
@@ -176,16 +166,25 @@ function Game() {
 
   return (
     <section className='w-full relative mb-8 flex flex-col items-center gap-8 overflow-x-hidden sm:gap-16'>
-      <h1 className='head_text'>
-        Round <span className='text-orange-500'>#{(round?.roundNumber === 0) ? 1 : round?.roundNumber}</span>
-      </h1>
+      {round?.roundNumber === 0
+        ? (
+          <h2 className='head_text'>
+            Roll dice to start game
+          </h2>
+        )
+        : (
+          <h1 className='head_text'>
+            Round <span className='text-orange-500'>#{(round?.roundNumber === 0) ? 1 : round?.roundNumber}</span>
+          </h1>
+        )
+      }
       <DiceSet diceFaces={round.displayedDice}/>
       {(round.roundNumber < (expansion !== 'none' || blueprint ? 6 : 7))
         ? (
           <button
             className='btn'
             onClick={rollDice}>
-            Next Round
+            Roll Dice
           </button>
         )
         : (
@@ -231,7 +230,7 @@ function Game() {
         <Rules onClose={() => setToggleRules(false)}/>
       </Modal>
 
-      {round.roundNumber === 1 && (
+      {round.roundNumber === 0 && (
         <Modal showModal={toggleBlueprint} onClose={() => setToggleBlueprint(false)}>
           <Blueprint blueprintImage={blueprint} onClose={() => setToggleBlueprint(false)}/>
         </Modal>

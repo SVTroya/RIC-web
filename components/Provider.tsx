@@ -9,27 +9,17 @@ type Props = {
   session?: Session
 }
 
-type Game =
-  {
-    expansion: string,
-    setExpansion: Dispatch<SetStateAction<string | undefined>> | null,
-    blueprint: string | null,
-    setBlueprint: Dispatch<SetStateAction<string | null | undefined>> | null,
-    objectives: Objective[],
-    setObjectives: Dispatch<SetStateAction<Objective[] | undefined>> | null,
-    gameId: string,
-    setGameId: Dispatch<SetStateAction<string | undefined>> | null
-  }
-
-const GameContext = createContext<Game>({
+export const initialGame: Game = {
+  _id: null,
   expansion: 'none',
-  setExpansion: null,
   blueprint: null,
-  setBlueprint: null,
   objectives: [],
-  setObjectives: null,
-  gameId: '',
-  setGameId: null
+  lastRound: null
+}
+
+const GameContext = createContext<{ currentGame: Game, setCurrentGame: Dispatch<SetStateAction<Game>> | null }>({
+  currentGame: initialGame,
+  setCurrentGame: null
 })
 
 export function useGame() {
@@ -37,21 +27,13 @@ export function useGame() {
 }
 
 function GameProvider({children}: { children: ReactNode }) {
-  const [expansion, setExpansion] = useState<string>()
-  const [blueprint, setBlueprint] = useState<string | null>()
-  const [objectives, setObjectives] = useState<Objective[]>()
-  const [gameId, setGameId] = useState<string>()
+  const [currentGame, setCurrentGame] = useState<Game>(initialGame)
 
   return (
     <GameContext.Provider value={{
-      expansion: expansion as string,
-      setExpansion,
-      blueprint: blueprint as string | null,
-      setBlueprint,
-      objectives: objectives as Objective[],
-      setObjectives,
-      gameId: gameId as string,
-      setGameId}}>
+      currentGame: currentGame,
+      setCurrentGame
+    }}>
       {children}
     </GameContext.Provider>
   )

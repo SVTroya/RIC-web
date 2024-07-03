@@ -16,12 +16,13 @@ type Die = {
   _id: string,
   die_type: string,
   faces: string[],
-  rotatable: boolean
+  rotatable: boolean,
 }
 
 type Face = {
-  image: string,
-  rotatable: boolean
+  image: string | null,
+  rotatable: boolean,
+  expansion: string
 }
 
 type Objective = {
@@ -43,11 +44,11 @@ type Round = {
 }
 
 type Game = {
-  _id?: string
+  _id?: string | null
   expansion: string,
-  blueprint?: string | null,
+  blueprint: string | null,
   objectives: Objective[],
-  lastRound?: Round
+  lastRound: Round | null
 }
 
 type DialogInfo = {
