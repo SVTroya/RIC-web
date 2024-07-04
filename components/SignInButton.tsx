@@ -5,20 +5,12 @@ import {userSignIn} from '@components/Nav'
 
 type Props = {
   text: string,
-  className: string
+  className: string,
+  providers: Record<LiteralUnion<BuiltInProviderType>, ClientSafeProvider>
 }
 
-function SignInButton({text, className}: Props) {
-  const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType>, ClientSafeProvider> | null>(null)
+function SignInButton({text, className, providers}: Props) {
 
-  useEffect(() => {
-    async function setUpProviders() {
-      const response = await getProviders()
-      setProviders(response)
-    }
-
-    setUpProviders().catch((error) => console.error(error))
-  }, [])
   return (
     providers &&
     Object.values(providers).map((provider) => (

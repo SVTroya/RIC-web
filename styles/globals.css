@@ -87,7 +87,7 @@ body{
 }
 
 .main {
-    @apply relative z-10 flex items-center flex-col max-w-7xl mx-auto sm:px-16 px-6 font-inter;
+    @apply relative flex items-center flex-col max-w-7xl mx-auto sm:px-16 px-6 font-inter;
 }
 
 .head_text {
@@ -223,7 +223,7 @@ body{
 }
 
 .loader {
-    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40
+    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 flex justify-center items-center
 }
 
 .base_die {

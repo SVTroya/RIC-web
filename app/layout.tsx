@@ -2,7 +2,8 @@ import type {Metadata} from 'next'
 import '@styles/globals.css'
 import Nav from '@components/Nav'
 import Provider from '@components/Provider'
-import React from 'react'
+import React, {Suspense} from 'react'
+import Loading from '@app/loading'
 
 export const metadata: Metadata = {
   title: 'RIC dice roller',
@@ -12,14 +13,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: Readonly<{ children: React.ReactNode; }>) {
   return (
-    <html lang='en' >
-      <body>
-      <Provider>
+    <html lang='en'>
+    <body>
+    <Provider>
 
-        <div className='app'>
-          <div className='gradient'/>
-        </div>
+      <div className='app'>
+        <div className='gradient'/>
+      </div>
 
+      <Suspense fallback={<Loading/>}>
         <header className='header'>
           <Nav/>
         </header>
@@ -27,9 +29,10 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         <main className='main'>
           {children}
         </main>
+      </Suspense>
 
-      </Provider>
-      </body>
+    </Provider>
+    </body>
     </html>
   )
 }

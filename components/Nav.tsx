@@ -6,8 +6,10 @@ import Image from 'next/image'
 import {useSession, signIn} from 'next-auth/react'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import UserMenu from '@components/UserMenu'
-import Loader from '@app/loader'
 import SignInButton from '@components/SignInButton'
+import Loading from '@app/loading'
+import {ClientSafeProvider, getProviders, LiteralUnion} from '@node_modules/next-auth/react'
+import {BuiltInProviderType} from '@node_modules/next-auth/providers'
 
 export function userSignIn(id: string) {
   signIn(id).catch((error) => console.error(error))
@@ -17,7 +19,9 @@ function Nav() {
   const {data: session} = useSession()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [menuEl, setMenuEl] = React.useState<null | HTMLElement>(null)
+  const [menuEl, setMenuEl] = useState<null | HTMLElement>(null)
+  const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType>, ClientSafeProvider> | null>(null)
+
   const open = Boolean(menuEl)
 
   function handleMenuClick(event: React.MouseEvent<HTMLElement>) {
@@ -25,10 +29,19 @@ function Nav() {
   }
 
   useEffect(() => {
+    async function setUpProviders() {
+      const response = await getProviders()
+      setProviders(response)
+    }
+
     if (session === undefined) {
       setIsLoading(true)
     } else {
       setIsLoading(false)
+    }
+
+    if (session === null) {
+      setUpProviders().catch((error) => console.error(error))
     }
   }, [session])
 
@@ -47,9 +60,12 @@ function Nav() {
           Home
         </Link>
         <div className='flex gap-2'>
-          {session?.user
-            ? (
-              <>
+          {(!session || !session?.user)
+            ? (providers && <SignInButton
+                text='Sign In'
+                className='text-gray-900 font-semibold text-lg transition ease-in-out duration-300 hover:text-orange-500 sm:text-xl'
+                providers={providers}/>)
+            : <>
                 <p
                   className='flex items-center text-gray-900 text-lg sm:text-xl font-medium'>
                   Hi, {session.user.name}
@@ -71,16 +87,10 @@ function Nav() {
                   isOpen={open}
                   onClose={() => setMenuEl(null)}/>
               </>
-            )
-            : (
-              <SignInButton
-                text='Sign In'
-                className='text-gray-900 font-semibold text-lg transition ease-in-out duration-300 hover:text-orange-500 sm:text-xl'/>
-            )
           }
         </div>
       </nav>
-      {isLoading && <Loader/>}
+      {isLoading && <Loading/>}
     </>
   )
 }

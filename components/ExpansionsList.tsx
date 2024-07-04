@@ -8,38 +8,29 @@ type Props = {
 function ExpansionsList({expansions, setChosenExpansion}: Props) {
 
   function handleExpansionChange(e: React.MouseEvent<HTMLInputElement>) {
-    const value = (e.target as HTMLInputElement).value
-    setChosenExpansion(value.toLowerCase())
+    setChosenExpansion((e.target as HTMLInputElement).value)
   }
 
   return (
     <form className='text-lg'>
-      <div className='flex gap-2 m-1'>
-        <input
-          type='radio'
-          id='none'
-          name='exp'
-          value='none'
-          defaultChecked
-          onClick={(e) => {
-            handleExpansionChange(e)
-          }}
-        />
-        <label htmlFor='none'>None</label>
-      </div>
       {expansions.map(expansion => (
         <div key={expansion._id} className='flex gap-2 m-1'>
           <input
             type='radio'
             id={expansion._id}
             name='exp'
-            value={expansion.name}
+            value={expansion.name.toLowerCase()}
             onClick={(e) => {
               handleExpansionChange(e)
             }}
           />
-          <label htmlFor={expansion._id}>{expansion.name}<span
-            className={expansion.color.toLowerCase().replace(' ', '_')}> ({expansion.color})</span></label>
+          <label htmlFor={expansion._id}>{expansion.name}
+            {expansion.color &&
+              <span
+                className={expansion.color.toLowerCase().replace(' ', '_')}> ({expansion.color})
+              </span>
+            }
+          </label>
         </div>
       ))}
     </form>

@@ -11,6 +11,9 @@ import {Session} from 'next-auth'
 import Dialog from '@components/Dialog'
 import SignInButton from '@components/SignInButton'
 import Storage from '@utils/storage'
+import Loading from '@app/loading'
+import {ClientSafeProvider, getProviders, LiteralUnion} from '@node_modules/next-auth/react'
+import {BuiltInProviderType} from '@node_modules/next-auth/providers'
 
 export async function saveGameToDB(game: Game, userId: string) {
   const res = await fetch(`/api/games/user/${userId}`, {
@@ -28,6 +31,8 @@ function GameSetup() {
   const [chosenExpansion, setChosenExpansion] = useState<string>('none')
   const [toggleBlueprintSelect, setToggleBlueprintSelect] = useState<boolean>(false)
   const [dialogInfo, setDialogInfo] = useState<DialogInfo | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType>, ClientSafeProvider> | null>(null)
 
   const {currentGame, setCurrentGame} = useGame()
 
@@ -41,12 +46,25 @@ function GameSetup() {
   }, [])
 
   useEffect(() => {
-    if (session === null || (session && !session?.user.expList)) {
-      fetchAllExpansions().catch(error => {
+    async function setUpProviders() {
+      const response = await getProviders()
+      setProviders(response)
+    }
+
+    if (session === null || !session?.user?.expList) {
+      setUpProviders().catch((error) => console.error(error))
+      setIsLoading(true)
+      fetchAllExpansions()
+        .then(() => setIsLoading(false))
+        .catch(error => {
         console.error(error)
       })
     } else if (session) {
-      setExpansions(session.user.expList.sort((a, b) => a._id.localeCompare(b._id)))
+      setExpansions([{
+        _id: 'none',
+        name: 'None',
+        color: ''
+      }, ...session.user.expList.sort((a, b) => a._id.localeCompare(b._id))])
 
       checkUnfinishedGame(session).catch(error => {
         console.error(error)
@@ -90,7 +108,12 @@ function GameSetup() {
     const res = await fetch('api/expansions')
     const data = await res.json()
 
-    setExpansions(data)
+    setExpansions([{
+      _id: 'none',
+      name: 'None',
+      color: ''
+    }, ...data])
+
   }
 
   async function fetchObjectives() {
@@ -189,6 +212,8 @@ function GameSetup() {
     router.push('/game')
   }
 
+
+
   return (
     <section className='flex gap-4 flex-col items-center sm:gap-10'>
       <h1 className=' max-w-176 head_text'>
@@ -201,13 +226,14 @@ function GameSetup() {
       >
         Start
       </button>
-      {!session?.user && (
+      {((session === null || !session?.user) && providers) &&
         <p className='text'>
           <SignInButton
             text='Sign Up'
-            className='text-orange-500 hover:underline'/>
+            className='text-orange-500 hover:underline'
+            providers={providers}/>
           {' '}to customise your expansion list</p>
-      )}
+      }
       <Dialog
         question={dialogInfo?.question as string}
         showDialog={dialogInfo?.showDialog as boolean}
@@ -216,6 +242,8 @@ function GameSetup() {
       <Modal showModal={toggleBlueprintSelect} onClose={() => setToggleBlueprintSelect(false)}>
         <BlueprintSelect handleBlueprintConfirm={handleBlueprintConfirm}/>
       </Modal>
+
+      {isLoading && <Loading/>}
 
     </section>
   )
