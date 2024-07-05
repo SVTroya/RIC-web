@@ -19,6 +19,7 @@ function ExpansionsList({expansions, setChosenExpansion}: Props) {
             type='radio'
             id={expansion._id}
             name='exp'
+            defaultChecked={expansion.name.toLowerCase() === 'none'}
             value={expansion.name.toLowerCase()}
             onClick={(e) => {
               handleExpansionChange(e)
