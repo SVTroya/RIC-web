@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {ClientSafeProvider, getProviders, LiteralUnion} from '@node_modules/next-auth/react'
+import React from 'react'
+import {ClientSafeProvider, LiteralUnion} from '@node_modules/next-auth/react'
 import {BuiltInProviderType} from '@node_modules/next-auth/providers'
 import {userSignIn} from '@components/Nav'
 

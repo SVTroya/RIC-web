@@ -1,5 +1,4 @@
 import {Schema, model, models} from 'mongoose'
-import Expansion from '@models/expansion'
 
 const userSchema = new Schema({
   email: {
