@@ -51,7 +51,7 @@ function GameSetup() {
       setProviders(response)
     }
 
-    if (session === null || !session?.user?.expList) {
+    if (session === null || (session && !session.user?.expList)) {
       setUpProviders().catch((error) => console.error(error))
       setIsLoading(true)
       fetchAllExpansions()
