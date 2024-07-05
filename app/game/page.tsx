@@ -168,8 +168,8 @@ function Game() {
     <section className='w-full relative mb-8 flex flex-col items-center gap-8 overflow-x-hidden sm:gap-16'>
       {round?.roundNumber === 0
         ? (
-          <h2 className='head_text'>
-            Roll dice to start game
+          <h2 className='head_text w-60 sm:w-96 md:w-128 lg:w-auto'>
+            Roll dice to start the game
           </h2>
         )
         : (
@@ -211,7 +211,7 @@ function Game() {
       {
         blueprint && (
           <div
-            className={`cursor-pointer rounded-l-lg overflow-clip flex absolute -right-[147px] top-16 sm:top-24 transition-transform ease-in-out duration-1000 md:-right-[203px]`}
+            className={`cursor-pointer rounded-l-lg overflow-clip flex absolute -right-[147px] top-16 sm:top-24 transition-transform ease-in-out duration-1000 md:-right-[203px] z-50`}
             onClick={(e) => handleBlueprintSidebar(e.currentTarget as HTMLDivElement)}>
             <p
               className='bg-orange-500 text-white text-center p-2 text-lg leading-[1.15] md:leading-[1.2] md:text-2xl md:p-4'>B<br/>l<br/>u<br/>e<br/>p<br/>r<br/>i<br/>n<br/>t
