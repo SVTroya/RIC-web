@@ -5,6 +5,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import 'react-horizontal-scrolling-menu/dist/styles.css'
 import HorizontalScroll from '@components/HorizontalScroll'
+import {useMediaQuery} from 'react-responsive'
+import { VisibilityContext, publicApiType } from 'react-horizontal-scrolling-menu'
 
 type Props = {
   handleBlueprintConfirm: (gameBlueprint: string) => void,
@@ -12,7 +14,11 @@ type Props = {
 }
 
 function BlueprintSelect({handleBlueprintConfirm}: Props) {
-  const [blueprints, setBlueprints] = useState<Array<Blueprint>>([{_id: 'random', image: 'random.webp', name: 'Random'}])
+  const [blueprints, setBlueprints] = useState<Array<Blueprint>>([{
+    _id: 'random',
+    image: 'random.webp',
+    name: 'Random'
+  }])
   const [selectedBlueprint, setSelectedBlueprint] = useState<string>('Random')
 
   useEffect(() => {
@@ -24,7 +30,9 @@ function BlueprintSelect({handleBlueprintConfirm}: Props) {
     const data = await res.json()
 
     const blueprints = [...data].sort((a, b) => a.name.localeCompare(b.name))
-    setBlueprints((prev) => {return [...prev, ...blueprints]})
+    setBlueprints((prev) => {
+      return [...prev, ...blueprints]
+    })
   }
 
   function handleBlueprintSelect(blueprintName: string) {
@@ -48,8 +56,9 @@ function BlueprintSelect({handleBlueprintConfirm}: Props) {
           <BlueprintCard
             blueprint={blueprint}
             key={blueprint._id}
-            onClick={handleBlueprintSelect}
-            selectedBlueprint={selectedBlueprint}/>
+            onSelect={handleBlueprintSelect}
+            selectedBlueprint={selectedBlueprint}
+            itemId={blueprint._id}/>
         ))}
       </HorizontalScroll>
 
@@ -74,19 +83,37 @@ function BlueprintSelect({handleBlueprintConfirm}: Props) {
 function BlueprintCard({
                          blueprint,
                          selectedBlueprint,
-                         onClick
+                         onSelect,
+                         itemId
                        }: {
   blueprint: Blueprint,
-  onClick: (blueprintName: string) => void
-  selectedBlueprint: string
+  onSelect: (blueprintName: string) => void
+  selectedBlueprint: string,
+  itemId: string
 }) {
+  const visibility = React.useContext<publicApiType>(VisibilityContext)
+  const visible = visibility.useIsVisible(itemId, true)
+  const isVisible = React.useDeferredValue(visible)
+
+  const isMobile = useMediaQuery({query: '(max-width: 639px)'})
+
+  useEffect(() => {
+    if (isMobile) {
+      onSelect(blueprint.name)
+    }
+  }, [isVisible])
+
+  function isSelected() {
+    return isMobile ? isVisible : selectedBlueprint === blueprint.name
+  }
+
   return (
     <div
       data-cy={blueprint._id}
       tabIndex={0}
       key={blueprint._id}
-      className={`${selectedBlueprint === blueprint.name ? 'blueprint_card selected_blueprint_card' : 'blueprint_card'}`}
-      onClick={() => onClick(blueprint.name)}>
+      className={`${isSelected() ? 'blueprint_card selected_blueprint_card' : 'blueprint_card'}`}
+      onClick={() => onSelect(blueprint.name)}>
       <div className='blueprint_image'>
         <Image
           src={'/assets/images/blueprints/' + blueprint.image}
