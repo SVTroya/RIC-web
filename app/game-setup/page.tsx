@@ -222,7 +222,7 @@ function GameSetup() {
         <p className='text'>
           <SignInButton
             text='Sign Up'
-            className='text-orange-500 hover:underline'
+            className='text-orange-500 hover:underline text-center'
             providers={providers}/>
           {' '}to customise your expansion list</p>
       }
