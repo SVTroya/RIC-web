@@ -29,6 +29,7 @@ body{
     justify-content: center;
     padding: 120px 24px 160px 24px;
     pointer-events: none;
+    outline: none !important;
 }
 
 .app:before {
@@ -51,10 +52,6 @@ body{
     top: 0;
     opacity: 0.4;
     filter: invert(1);
-
-    &:focus {
-        outline: none !important;
-    }
 }
 
 .gradient {
