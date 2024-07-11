@@ -219,10 +219,10 @@ function GameSetup() {
         Start
       </button>
       {((session === null || !session?.user) && providers) &&
-        <p className='text'>
+        <p className='text text-center'>
           <SignInButton
             text='Sign Up'
-            className='text-orange-500 hover:underline text-center'
+            className='text-orange-500 hover:underline'
             providers={providers}/>
           {' '}to customise your expansion list</p>
       }
