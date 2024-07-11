@@ -241,4 +241,4 @@ function GameSetup() {
   )
 }
 
-export default {GameSetup, saveGameToDB}
+export default GameSetup
