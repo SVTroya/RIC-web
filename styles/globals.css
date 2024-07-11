@@ -29,7 +29,6 @@ body{
     justify-content: center;
     padding: 120px 24px 160px 24px;
     pointer-events: none;
-    outline: none !important;
 }
 
 .app:before {
@@ -128,6 +127,8 @@ body{
 }
 
 .blueprint_card {
+    outline: none !important;
+
     @apply hover:scale-105 transition-transform duration-200 ease-in-out flex-col items-center gap-2 flex ml-3 mr-3
 }
 
