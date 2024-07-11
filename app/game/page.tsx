@@ -11,7 +11,7 @@ import Blueprint from '@components/Blueprint'
 import Image from 'next/image'
 import {useSession} from 'next-auth/react'
 import Storage from '@utils/storage'
-import {saveGameToDB} from '@app/game-setup/page'
+import saveGameToDB from '@utils/saveGameToDB'
 
 function Game() {
   const router = useRouter()

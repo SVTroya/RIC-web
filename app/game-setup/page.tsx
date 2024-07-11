@@ -14,15 +14,7 @@ import Storage from '@utils/storage'
 import Loading from '@app/loading'
 import {ClientSafeProvider, getProviders, LiteralUnion} from '@node_modules/next-auth/react'
 import {BuiltInProviderType} from '@node_modules/next-auth/providers'
-
-export async function saveGameToDB(game: Game, userId: string) {
-  const res = await fetch(`/api/games/user/${userId}`, {
-    method: 'POST',
-    body: JSON.stringify({game})
-  })
-
-  return await res.json()
-}
+import saveGameToDB from '@utils/saveGameToDB'
 
 function GameSetup() {
   const {data: session} = useSession()
@@ -249,4 +241,4 @@ function GameSetup() {
   )
 }
 
-export default GameSetup
+export default {GameSetup, saveGameToDB}
