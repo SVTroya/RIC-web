@@ -185,7 +185,7 @@ body{
 }
 
 .objective_card:hover>div {
-    @apply scale-100
+    @apply lg:scale-100
 }
 
 .blueprint_remainder_show {

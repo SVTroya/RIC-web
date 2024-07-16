@@ -1,14 +1,16 @@
 import React from 'react'
 import Image from 'next/image'
+import {useMediaQuery} from 'react-responsive'
 
 type Props = {
   objectives: Objective[]
 }
 
 function ObjectivesList({objectives}: Props) {
+  const isDesktop = useMediaQuery({query:'(min-width: 1024px)'})
 
   function handleObjectiveClick(target: HTMLLIElement) {
-    target.getElementsByTagName('div')[0].classList.toggle('scale-100')
+    if (!isDesktop) target.getElementsByTagName('div')[0].classList.toggle('scale-100')
   }
 
   return (
