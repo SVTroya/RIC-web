@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react'
 import ExpansionsList from '@components/ExpansionsList'
 import {useSession} from 'next-auth/react'
-import {initialGame, useGame} from '@components/Provider'
+import {useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
 import Modal from '@components/Modal'
 import BlueprintSelect from '@components/BlueprintSelect'
@@ -32,6 +32,14 @@ function GameSetup() {
 
   useEffect(() => {
     if (setCurrentGame) {
+      const initialGame: Game = {
+        _id: null,
+        expansion: 'none',
+        blueprint: null,
+        objectives: [],
+        lastRound: null
+      }
+
       setCurrentGame(initialGame)
       Storage.remove('game')
     }
@@ -203,8 +211,6 @@ function GameSetup() {
 
     router.push('/game')
   }
-
-
 
   return (
     <section className='flex gap-4 flex-col items-center sm:gap-10'>

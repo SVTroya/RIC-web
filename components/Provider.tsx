@@ -9,7 +9,7 @@ type Props = {
   session?: Session
 }
 
-export const initialGame: Game = {
+const initialGame: Game = {
   _id: null,
   expansion: 'none',
   blueprint: null,
