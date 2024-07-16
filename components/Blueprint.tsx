@@ -16,7 +16,7 @@ function Blueprint({blueprintImage, onClose}: Props) {
           width={709}
           height={1007}
           alt='Blueprint image'
-          className='w-[406px] h-full'>
+          className='w-[250px] sm:w-[406px] h-full'>
         </Image>
       </div>
       <button
