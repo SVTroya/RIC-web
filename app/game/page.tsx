@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react'
 import DiceSet from '@components/DiceSet'
 import ObjectivesList from '@components/ObjectivesList'
-import {initialGame, useGame} from '@components/Provider'
+import {useGame} from '@components/Provider'
 import {useRouter} from 'next/navigation'
 import Modal from '@components/Modal'
 import Rules from '@components/Rules'
@@ -78,7 +78,9 @@ function Game() {
 
   useEffect(() => {
     if (round.roundNumber !== 0) {
-      if (setCurrentGame) setCurrentGame(prevGame => { return {...prevGame, lastRound: round}})
+      if (setCurrentGame) setCurrentGame(prevGame => {
+        return {...prevGame, lastRound: round}
+      })
 
       if (currentGame?._id) {
         fetch(`/api/games/${currentGame._id}`, {
@@ -88,7 +90,8 @@ function Game() {
           })
         })
           .catch((error) => {
-            console.error(error)})
+            console.error(error)
+          })
       }
     }
   }, [round])
@@ -97,7 +100,9 @@ function Game() {
     if (session?.user?.id && !currentGame?._id) {
       saveGameToDB(currentGame, session?.user?.id)
         .then((gameId) => {
-          if (setCurrentGame) setCurrentGame(prevGame => { return {...prevGame, _id: gameId}})
+          if (setCurrentGame) setCurrentGame(prevGame => {
+            return {...prevGame, _id: gameId}
+          })
         })
         .catch((error => console.error(error)))
     }
@@ -109,8 +114,7 @@ function Game() {
       if (setCurrentGame) setCurrentGame(game)
 
       if (game.lastRound) setRound(game.lastRound)
-    }
-    else router.push('/')
+    } else router.push('/')
   }
 
   async function restoreFromDB(gameId: string) {
@@ -139,7 +143,11 @@ function Game() {
         const newRound: Round = {
           roundNumber: prevState.roundNumber + 1,
           displayedDice: dice.map(die => {
-            return {image: die.faces[Math.floor(Math.random() * die.faces.length)], rotatable: die.rotatable, expansion: die.die_type}
+            return {
+              image: die.faces[Math.floor(Math.random() * die.faces.length)],
+              rotatable: die.rotatable,
+              expansion: die.die_type
+            }
           })
         }
 
@@ -153,7 +161,16 @@ function Game() {
       fetch(`/api/games/${currentGame._id}`, {method: 'DELETE'}).catch((error) => console.error(error))
     }
 
-    if (setCurrentGame) setCurrentGame(initialGame)
+    if (setCurrentGame) {
+      const initialGame: Game = {
+        _id: null,
+        expansion: 'none',
+        blueprint: null,
+        objectives: [],
+        lastRound: null
+      }
+      setCurrentGame(initialGame)
+    }
 
     Storage.remove('game')
 
