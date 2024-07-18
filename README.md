@@ -35,7 +35,7 @@ to deliver smooth gameplay and an enjoyable user interface.
 ## Usage
 
 To play the game, just take your Railroad Ink Challenge player boards and markers and simply visit
-the [RIC app companion](https://ric-web.vercel.app/game) and follow the on-screen instructions.
+the [RIC companion app](https://ric-web.vercel.app/game) and follow the on-screen instructions.
 Enjoy the game!
 
 ## Contact
