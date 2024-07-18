@@ -14,7 +14,7 @@ game [ric-web.vercel.app/game](https://ric-web.vercel.app/game).
 ## Introduction
 
 Do you like to play Railroad Ink Challenge in rough conditions such as bus, train or outdoor, but struggle with dice
-rolling? If yes then I have a solution for you. RIC companion is an easy-to-use and interactive web application designed
+rolling and cards being blown away by wind? If yes then I have a solution for you. RIC companion is an easy-to-use and interactive web application designed
 to provide an engaging
 experience for users, who like to play their game outside comfy rooms. The app leverages modern web technologies
 to deliver smooth gameplay and an enjoyable user interface.
